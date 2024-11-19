@@ -16,6 +16,11 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
     //default location for personal machine, make it compatible for all
     this.defaultPath = "/Users/pizza/Desktop/coding/Python/CS127/"
+    
+    // Distances for the GUI 
+    this.assignmentDistance = 30;
+    this.gradedAssignmentDistance = 17;
+    this.failedAssignmentDistance = 20;
   }
 
   readlineInterface() 
@@ -30,7 +35,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
   async questioning(question)
   {
-    return new Promise( (resolve) => this.rl.question(question, resolve))
+    return new Promise( (resolve) => this.rl.queon(question, resolve))
   }
 
   async aquireLoginDetails() 
@@ -227,12 +232,17 @@ class readlineFunctionality // Class is specifcally designed for per session use
     {
       if (index === this.pointer) 
       {
-        console.log(`>   ${item.text}   <          ${item.date ? item.date : ""} `); // Highlight the selected item
+        console.log
+        (
+        `
+>  ${this.wordDistancing(item.text)}        ${item.date ? item.date : ""}        ${item.score ? item.score : ""}  <
+        `
+        ); // Highlight the selected item
       }
 
         else
         {
-          console.log(`    ${item.text}              ${item.date ? item.date : ""}`);
+          console.log(`${this.wordDistancing(item.text,this.assignmentDistance)}${item.date ? item.date : ""}        ${item.score ? item.score : ""}`);
         }
     });
     this.isActive = true;
@@ -247,7 +257,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
     {
       console.log
       (
-        `${obj.score}   ${obj.text}`
+        `${this.wordDistancing(obj.text,this.gradedAssignmentDistance)}${obj.score}`
       )
     })
 
@@ -262,12 +272,24 @@ class readlineFunctionality // Class is specifcally designed for per session use
     {
         console.log
         (
-          `${e.text}       ${e.date}`
+          `${this.wordDistancing(e.text,this.failedAssignmentDistance)}${e.date}`
         )
     })
 
   }
   
+  // For spacing purposes, we can add fillers so everything can be organized
+  wordDistancing(string,distance)
+  {
+    while(string.length < distance)
+    {
+      string = string + " "
+    }
+    return string;
+  }
+
+
+
   async menuToggler(items)
   {
     const {assignments} = items
@@ -312,7 +334,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
   }
 
 
-  async displayList(items,message) // Takes an object which'll have this format
+  async displayList(items,message,distance) // Takes an object which'll have this format
   {
     console.clear();
     console.log
@@ -324,9 +346,14 @@ class readlineFunctionality // Class is specifcally designed for per session use
     )
     items.forEach((item, index) => {
         if (index === this.pointer) {
-            console.log(`>   ${item.text}   <          ${item.date ? item.date : ""} `); // Highlight the selected item
+            console.log
+            (
+            `
+> ${this.wordDistancing(item.text,distance)}${item.date ? item.date : ""} <
+            `
+            ); // Highlight the selected item
         } else {
-            console.log(`    ${item.text}              ${item.date ? item.date : ""}`);
+            console.log(`${this.wordDistancing(item.text,distance)}${item.date ? item.date : ""}`);
         }
     });
     this.isActive = true;
@@ -335,11 +362,11 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
 
 
-  async toggler(items,message)
+  async toggler(items,message,distance)
   {
     
     const length = items.length;
-    this.displayList(items,message)
+    this.displayList(items,message,distance)
     return new Promise((resolve) => { // Promise waits for the result
     if(this.isActive == true)
     { 
@@ -373,7 +400,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
             process.stdin.removeListener("keypress", keyHandler) // Prevents event listener leaks
           }
 
-          this.displayList(items,message); // Refreshing the GUI
+          this.displayList(items,message,distance); // Refreshing the GUI
           }
 
         process.stdin.on("keypress", keyHandler);
@@ -381,7 +408,6 @@ class readlineFunctionality // Class is specifcally designed for per session use
       }
 
     }); // end of promise, this is what is returned to the other script.
-
   }
 }
 

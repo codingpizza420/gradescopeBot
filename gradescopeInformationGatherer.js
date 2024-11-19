@@ -16,6 +16,9 @@ const {cookieStorage, localStorage} = require("./browserStorage.js");
 
 */
 
+
+
+
 class pup
 {
   constructor()
@@ -23,6 +26,13 @@ class pup
     this.browser = null;
     this.page = null; 
   }
+
+
+
+
+
+
+
 
   async gatheringInformation()
   {
@@ -38,6 +48,14 @@ class pup
   {
    await new Promise((resolve) => setTimeout(resolve, milliseconds));
   }
+
+
+
+
+
+
+
+
 
 
   
@@ -64,57 +82,83 @@ class pup
     // Within these time spans, we could add the update on the user's loading side.
     for(let i = 0; i < check.length; i++)
     {
-      await this.page.goto(`${check[i].score}`, {
-      waitUntil: 'domcontentloaded', // Ensure that the DOM is loaded before proceeding
-      timeout: 60000, // 60 seconds timeout
-    });
-
-      check[i].score = await this.page.evaluate(() =>
-      {
-        const scoreElement = document.querySelector(".submissionOutline--sectionHeading .submissionOutlineHeader--totalPoints");
-        return scoreElement ? scoreElement.textContent.trim() : null;
-      })
+      check[i].score = await this.urlToScore(check[i].score);
     }
-    // We are still logged in after running the goto script, why? session storage 
+    
+    //Resubmission assignments go with assignments
+    allAssignments.assignments = allAssignments.assignments.concat(allAssignments.gradedAssignments.filter(a => a.resubmission == true));
+    allAssignments.gradedAssignments = allAssignments.gradedAssignments.filter(a => a.resubmission == false);
 
+    
+    // Back to Default URL
     await this.page.goto("https://www.gradescope.com/courses/843649");
 
+    // GUI index
+    const menuIndex = await readline.menuToggler(allAssignments)
 
-    const menuOption = await readline.menuToggler(allAssignments)
-
-    console.clear();
-    console.log(allAssignments.assignments[menuOption].text, " has been selected")
-
+    // assignment object
+    const assignment = allAssignments.assignments[menuIndex]; 
     
-    await this.page.locator(`button[data-post-url="${allAssignments.assignments[menuOption].postUrl}"]`).click(); 
+    if(assignment.resubmission)
+    {
+      this.resubmitAssignment(assignment.ResubmissionLink)
+    }
+    else
+    {
+      this.submitAssignment(assignment.postUrl);
+    }    
+  }
+
+  async submitAssignment(uploaderTag)
+  {
+    await this.page.locator(`button[data-post-url="${uploaderTag}"`).click();
     await this.page.screenshot({path : "moose.png"})
-    
-    // Locating the file on the local machine
+
+    this.finish()
+  }
+
+
+  async resubmitAssignment(uploaderTag)
+  {
+    console.log(uploaderTag)
+    await this.page.locator(`[href="${uploaderTag}"]`).click();
+    await this.page.waitForNavigation()
+    await this.page.locator(".js-submitAssignment").click();
+
+    this.finish()
+  }
+
+
+
+  // Accessing the uploader is different, however, same procedure and outcome.
+  async finish()
+  {
+    // Locating files on the local machine
     const fileObjects = await readline.requestingFileLocation();
 
-    // Displaying files alongside filepath
-    const filepath = `${readline.defaultPath}${fileObjects[await readline.toggler(fileObjects)].text}`
-    console.log(filepath)
+    // filepath alongisde function which decides the exact file.
+    const file = `${readline.defaultPath}${fileObjects[await readline.toggler(fileObjects,"",25)].text}`;
+
 
     // Submitting the file in the <input></input> field
     const fileInput = await this.page.$(".dz-hidden-input");
-    await fileInput.uploadFile(filepath);
+    await fileInput.uploadFile(file);
 
     // Returns site's data analysis, name and size
     const siteData = await this.uploadedAssignmentData(fileInput);
 
     // Confirmation form user. Yes Or No with 0 being yes and 1 being no, Binary reversed.
-   const response = await readline.toggler([{text : "Yes"}, {text : "No"}], await readline.sitePrompt(siteData));
-    if(response == 0) 
+   const response = await readline.toggler([{text : "Yes"}, {text : "No"}], await readline.sitePrompt(siteData), 5);
+    if(response == 0)
     {
       const {name, score, testCase} = await this.submittingAssignment();
       console.log(
       `
-        
+
                                   Final Result
 
         Name : ${name}
-        
+
         Score : ${score}
 
         Result : ${testCase}
@@ -126,6 +170,13 @@ class pup
       console.log(" Figure out something from here. ")
     }
   }
+
+
+
+
+
+
+
 
   async verifyLoginCookie()
   {
@@ -139,7 +190,6 @@ The username and password you provided didn't work, try again!
             `
       )
         return this.verifyLoginCookie(false)
-
       }
       else
       {
@@ -147,6 +197,14 @@ The username and password you provided didn't work, try again!
       }
 
   }
+
+
+  
+
+
+
+
+
 
 
   
@@ -173,6 +231,10 @@ The username and password you provided didn't work, try again!
 
 
 
+
+
+
+
   async uploadedAssignmentData()
   {
     // Giving the site time to calculate data size. 
@@ -189,6 +251,13 @@ The username and password you provided didn't work, try again!
     return fileData
   }
  
+
+
+
+
+
+
+
 
 
 
@@ -222,7 +291,16 @@ The username and password you provided didn't work, try again!
     })
     return assignmentAssessment
   }
-  
+ 
+
+
+
+
+
+
+
+
+
   
 async assignmentsDueDetails() // This function extracts assignments' html from inside gradescope course.
   {
@@ -238,7 +316,7 @@ async assignmentsDueDetails() // This function extracts assignments' html from i
         .map(th => 
         ({
           text : th.querySelector("button").textContent,
-          postUrl : th.querySelector("button").getAttribute('data-post-url'),
+          postUrl : th.querySelector("button") ? th.querySelector("button").getAttribute('data-post-url') : "find something else to do it!",
           date : th.querySelector(".submissionTimeChart--dueDate").textContent
         }))
 
@@ -254,7 +332,10 @@ async assignmentsDueDetails() // This function extracts assignments' html from i
           // Handles the scrapper's search for grades 
           scoreChecker : th.querySelector(".submissionStatus--score") ? false : true,
 
-          resubmission : null, // Haven't yet figured out how I want to handle this part yet.
+          // Contains time chart? then we can resubmit it, else just display that score if it hasn't already.
+          resubmission : th.querySelector(".submissionTimeChart--timeRemaining") ? true : false,
+          
+          ResubmissionLink : th.querySelector(".submissionTimeChart--timeRemaining") ? th.querySelector("a").getAttribute("href") : null,
 
           date : th.querySelector(".submissionTimeChart--dueDate") ? th.querySelector(".submissionTimeChart--dueDate").textContent : "Not Provided",
 
@@ -285,10 +366,41 @@ async assignmentsDueDetails() // This function extracts assignments' html from i
 
     // returns gradescope assignments in an object format.
     return assignments
-  
-
   }
+
+
+
+  // Handles scores that haven't been approved by the system
+  async urlToScore(url)
+  {
+    await this.page.goto(url,
+    {
+      waitUntil: 'domcontentloaded', // Loading DOM
+      timeout: 60000, // 60 seconds timeout
+    });
+
+      const score = await this.page.evaluate(() =>
+      {
+        const scoreElement = document.querySelector(".submissionOutline--sectionHeading .submissionOutlineHeader--totalPoints");
+        return scoreElement ? scoreElement.textContent.trim() : null;
+      })
+
+    return score
+  }
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
 
 
 
