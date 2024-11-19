@@ -35,7 +35,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
   async questioning(question)
   {
-    return new Promise( (resolve) => this.rl.queon(question, resolve))
+    return new Promise( (resolve) => this.rl.question(question, resolve))
   }
 
   async aquireLoginDetails() 
