@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const readlineFunctionality = require('./serverPrompts.js');
 const {cookieStorage, localStorage} = require("./browserStorage.js");
+const {Path} = require("./path.js");
 /*
   
   Puppeteer is a great library for web crawling. download
@@ -28,21 +29,34 @@ class pup
   }
 
 
-
-
-
-
-
-
   async gatheringInformation()
   {
     this.browser = await puppeteer.launch()
     this.page = await this.browser.newPage();
     await this.page.goto("https://www.gradescope.com/courses/843649") // Since this is a grade scope automatter
 
-    // automater asks the user for credentials / error handles.
-    await this.login();
+    const cookieChecker = await cs.loadLoginCookies(this.page);
+
+    if(cookieChecker == false)
+    {
+      console.log
+      (
+        `Login to get started!
+`
+      )
+      // Will repeat until true. Ran on recursion
+      await this.getCookie();
+      await cs.saveLoginCookie(this.page);
+    }
+    else
+    {
+      console.log("Welcome back, Fetching Data...")
+    }
+    
+    await this.loggedIn();
   }
+
+
 
   async delayTimer(milliseconds)
   {
@@ -59,22 +73,8 @@ class pup
 
 
   
-  async login()
-  {
-    const cookieChecker = await cs.loadLoginCookies(this.page);
-
-    if(cookieChecker == false)
-    {
-      console.log
-      (
-        `Login to get started!
-`
-      )
-      // Will repeat until true. Ran on recursion
-      await this.verifyLoginCookie();
-      await cs.saveLoginCookie(this.page);
-    } 
-
+  async loggedIn()
+  { 
     const allAssignments = await this.assignmentsDueDetails();
     const check = allAssignments.gradedAssignments.filter(obj => obj.scoreChecker == true)
     //capturing the data with urls
@@ -109,10 +109,10 @@ class pup
     }    
   }
 
+
   async submitAssignment(uploaderTag)
   {
     await this.page.locator(`button[data-post-url="${uploaderTag}"`).click();
-    await this.page.screenshot({path : "moose.png"})
 
     this.finish()
   }
@@ -120,7 +120,6 @@ class pup
 
   async resubmitAssignment(uploaderTag)
   {
-    console.log(uploaderTag)
     await this.page.locator(`[href="${uploaderTag}"]`).click();
     await this.page.waitForNavigation()
     await this.page.locator(".js-submitAssignment").click();
@@ -138,7 +137,6 @@ class pup
 
     // filepath alongisde function which decides the exact file.
     const file = `${readline.defaultPath}${fileObjects[await readline.toggler(fileObjects,"",25)].text}`;
-
 
     // Submitting the file in the <input></input> field
     const fileInput = await this.page.$(".dz-hidden-input");
@@ -178,7 +176,7 @@ class pup
 
 
 
-  async verifyLoginCookie()
+  async getCookie()
   {
     const credentials = await readline.aquireLoginDetails();
     if(await this.fillLogin(credentials) == false)
@@ -189,7 +187,7 @@ class pup
 The username and password you provided didn't work, try again!
             `
       )
-        return this.verifyLoginCookie(false)
+        return this.getCookie(false);
       }
       else
       {
@@ -408,5 +406,5 @@ async assignmentsDueDetails() // This function extracts assignments' html from i
 
 
 
-const readline = new readlineFunctionality();const gradescope = new pup();const cs = new cookieStorage();const ls = new localStorage(gradescope.page);
+const readline = new readlineFunctionality();const gradescope = new pup();const cs = new cookieStorage();const ls = new localStorage(gradescope.page);const path = new Path();
 gradescope.gatheringInformation();

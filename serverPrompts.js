@@ -17,10 +17,10 @@ class readlineFunctionality // Class is specifcally designed for per session use
     //default location for personal machine, make it compatible for all
     this.defaultPath = "/Users/pizza/Desktop/coding/Python/CS127/"
     
-    // Distances for the GUI 
+    // Distances for the GUI, depending on the terminal's dimensions, and longest assignment text name, we can find a length that fits all categories 
     this.assignmentDistance = 30;
-    this.gradedAssignmentDistance = 17;
-    this.failedAssignmentDistance = 20;
+    this.gradedAssignmentDistance = 31;
+    this.failedAssignmentDistance = 30;
   }
 
   readlineInterface() 
@@ -33,6 +33,8 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
   }
 
+  
+
   async questioning(question)
   {
     return new Promise( (resolve) => this.rl.question(question, resolve))
@@ -40,7 +42,6 @@ class readlineFunctionality // Class is specifcally designed for per session use
 
   async aquireLoginDetails() 
   {
-    console.log
     const username = await this.questioning("Username: ")
     if(await this.usernameVerifyer(username) == false)
     {
@@ -349,7 +350,7 @@ class readlineFunctionality // Class is specifcally designed for per session use
             console.log
             (
             `
-> ${this.wordDistancing(item.text,distance)}${item.date ? item.date : ""} <
+> ${this.wordDistancing(item.text,distance)}${item.date ? item.date : ""}   <
             `
             ); // Highlight the selected item
         } else {

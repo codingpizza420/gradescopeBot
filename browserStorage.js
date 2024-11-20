@@ -39,7 +39,7 @@ class cookieStorage
   {
     const cookies = await moose.cookies();
     await fs.writeFile("./cookies.json", JSON.stringify(cookies, null, 2));
-    console.log("cookies have been handled.")
+    console.log("Fetching Data...")
   }
 
   updateLoginCookie()
