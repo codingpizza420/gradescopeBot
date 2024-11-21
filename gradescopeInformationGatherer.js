@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer');
 const readlineFunctionality = require('./serverPrompts.js');
 const {cookieStorage, localStorage} = require("./browserStorage.js");
-const {Path} = require("./path.js");
 /*
   
   Puppeteer is a great library for web crawling. download
