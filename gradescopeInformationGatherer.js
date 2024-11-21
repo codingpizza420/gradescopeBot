@@ -3,7 +3,8 @@ const readlineFunctionality = require('./serverPrompts.js');
 const {cookieStorage, localStorage} = require("./browserStorage.js");
 /*
   
-  Puppeteer is a great library for web crawling. download
+ear
+ qPuppeteer is a great library for web crawling. download
 
 
   download : npm i puppeteer
@@ -405,5 +406,5 @@ async assignmentsDueDetails() // This function extracts assignments' html from i
 
 
 
-const readline = new readlineFunctionality();const gradescope = new pup();const cs = new cookieStorage();const ls = new localStorage(gradescope.page);const path = new Path();
+const readline = new readlineFunctionality();const gradescope = new pup();const cs = new cookieStorage();const ls = new localStorage(gradescope.page);
 gradescope.gatheringInformation();
