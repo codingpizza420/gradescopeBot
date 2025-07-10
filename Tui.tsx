@@ -83,7 +83,7 @@ function App() { // This will be a
 
 
   // These are the three states this program can be in, main to select one of the two. submit is for submitting assignments. fileChooser is for changing the path or creating a path for file submission locations.
-	const [menu, setMenu] = useState<'main' | 'submit' | 'fileChooser'>('submit');
+	const [menu, setMenu] = useState<'main' | 'submit' | 'fileChooser'>('main');
   
   // Having these states will be very benefical later on. Having different states will be easier to handle since I can now distguish current and previous proccesses. Therefore, I can create a system toggling between different states and processes.
 
