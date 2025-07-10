@@ -1,0 +1,21 @@
+
+
+  "compilerOptions": {
+    "module": "ESNext", // Use "ESNext" for modern projects
+    "moduleResolution": "node16", // or "nodeNext" / "bundler"
+    "allowJs" : true,
+
+    "target": "ESNext", // Target the latest ECMAScript version
+    "jsx": "react", // Enable JSX support
+    "esModuleInterop": true, // Allow ES Module interop
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "outDir": "./dist", // Output directory for compiled files
+    "allowSyntheticDefaultImports": true // Very important for using .js files in .tsx
+  },
+  "include": 
+  [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js"
+  ] // Include typescript and js files
+} 
