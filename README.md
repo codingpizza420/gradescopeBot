@@ -1,4 +1,4 @@
 ## GradeScope Bot
 
-[Demo](media/gradescopeBot.gif)
+![Demo](media/gradescopeBot.gif)
 
