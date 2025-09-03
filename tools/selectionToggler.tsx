@@ -24,6 +24,7 @@ import {Box, Text, useInput} from "ink";
 */
 
 
+// Toggling between different list items, keeping track of current item, built in display, verticalArrows and horitonalArrows, changing the state, location of state 
 function Toggler({pointerLimit, activeElement, setActiveElement, enterFunction, DisplayElements, verticalArrows, horizontalArrows, setMenu, location})
 { // pointerLimit is used to traverse the array in a circular motion by resetting the index.
 
@@ -110,10 +111,14 @@ function Toggler({pointerLimit, activeElement, setActiveElement, enterFunction, 
 
 }
 
-function Switching({switchForward, switchBackward, valid, updateFileFunc})
+function SwitchingStates({switchForward, switchBackward, valid, updateFileFunc})
 {
+
+  // Switching between states with booleans.
+
+
   /*
-    Unlike the switching in between items in a given set, I'm instead switching in between random items an a random order. Therefore, to make sure I don't hit a deadend I'll have an item parameter to make sure the place is valid. I'll have to create something to make sure I don't leave the starting state. I'll store previous elsewhere. 
+    Unlike the switching in between items in a given set, I'm instead switching in between random items in a random order. Therefore, to make sure I don't hit a deadend I'll have an item parameter to make sure the place is valid. I'll have to create something to make sure I don't leave the starting state. I'll store previous elsewhere. 
    
 
   */
@@ -131,7 +136,7 @@ function Switching({switchForward, switchBackward, valid, updateFileFunc})
     }
 
     if(key.return) // Setting this to the default directory
-    {
+    { 
       updateFileFunc(); 
     }
 
@@ -141,4 +146,96 @@ function Switching({switchForward, switchBackward, valid, updateFileFunc})
 
 }
 
-export {Toggler, Switching};
+
+
+/*
+ 
+
+   End goal with this function is to reduce the size of some of these other togglers.
+
+
+*/
+
+
+function SimpleSwitcher({Vertical, Horizontal, Setter, list, index, setIndex}) // This does not display anything, it merley acts as a variable changer  
+{
+
+  /* 
+    My usecase for SimpleSwitcher is to interactive between username and password inputfields seperatley, however,
+    I noticed how I could reuse this function in the main Toggler function.
+  
+  */
+    
+  /*
+        How this function works
+        
+        given a list of items you want to toggle between
+
+        ["usernameField", "passwordField", "submitButton"]
+        
+        left and right arrow keys determine the direction we are traversing the indicies 
+
+  */
+  
+  useInput( (input, key) => 
+  {
+    if(Vertical)
+    {  
+      if(key.downArrow)
+      {
+        index += 1;
+        if(index > list.length -1)
+        { // since this is adding, we go back to the begining
+          index = 0;
+        }
+      } 
+  
+      if(key.upArrow)
+      {
+        index -= 1;
+        if(index < 0)
+        {
+          index = list.length -1;
+        }
+      }
+
+      Setter(list[index]);
+      setIndex(index);
+
+    }
+    
+    /*
+        
+              Figure out how to get this side without all that extra code
+     
+     if(Horizontal)
+    {
+      if(key.rightArrow)
+      {
+
+      } 
+      
+      if(key.leftArrow)
+      {
+
+      }
+    }*/
+    
+
+
+    /*if(key.return)
+    { 
+      enterFunction() 
+    }*/
+
+  })
+
+  return "";
+
+
+
+}
+
+
+
+export {Toggler, SwitchingStates, SimpleSwitcher};

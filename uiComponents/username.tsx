@@ -4,9 +4,9 @@ import {TextInput} from '@inkjs/ui';
 
 import InputBox from "../tools/inputQueries.js";
 
-function UsernameComponent( {prompts, setValid, username, setUsername} ) // username parameter is important for displaying the usernameEntered
+function UsernameComponent( {prompts, setValid, username, setUsername, active, submitResponse, validResponse, resetAll, credentialValidity } ) // username parameter is important for displaying the usernameEntered
 {
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
 
   
   const validateUsername = (u) => 
@@ -20,27 +20,56 @@ function UsernameComponent( {prompts, setValid, username, setUsername} ) // user
     }
     else // The username is valid to be submitted, however, the actual credentials haven't been determined yet.
     {
-      setError("");
+      setError(false);
       setValid(true);
+
+      // username is valid, move onto the password input field
+      validResponse();
     }
   }
 
+  const settingUsername = (u) =>
+  {
+    setUsername(u);
 
+    // Taking advantage of the event listener, don't want to stack it
+    if(!credentialValidity)
+    {
+      resetAll();
+    }
+  }
 
   return (
 
-    <Box flexDirection="column" gap={1} width={50} >
+    <Box flexDirection="column" 
+      gap={1}
+      width={50}
+    >
+    
+
+      <Text
+      
+        dimColor = 
+        {
+          active ? false : true
+        }
+
+        // if there is an error message, or the larger scoped function returned not valid credentials  
+        color={ error || (submitResponse == false) ? "red" : "brightblue"}
+
+        >Username :</Text>
+
       <InputBox
-        placeHolder="Enter username..."
+        active={active}
+        placeHolder={!error ? "Enter username..." : error}
         query={username}
-        setQuery={setUsername}
+        setQuery={settingUsername}
         visibilityKey={null}
         currentlyVisible={true}
+        error={error || (submitResponse == false) ? true : false}
+        setError={setError}
         func={ () => {validateUsername(username)}}
       />
-    <Box flexDirection="column">
-      <Text color="red">{error ? error : ""}</Text>
-    </Box>
     </Box>
   )
 }

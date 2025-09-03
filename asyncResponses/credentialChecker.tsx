@@ -18,6 +18,7 @@ async function handleLogin( {setTryAgain, setLogin, setValid, setUsername,setPas
    setPage(currentPage)
    setTryAgain(false) 
    setCookie(true) // setting cookie to just in case I need to reference it 
+   return true;
   }  
   else
   {
@@ -32,7 +33,7 @@ async function handleLogin( {setTryAgain, setLogin, setValid, setUsername,setPas
     setValid(false);
     setUsername("");
     setPassword("");
-
+    return false
   }
 }
 

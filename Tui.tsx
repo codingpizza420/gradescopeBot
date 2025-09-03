@@ -16,6 +16,12 @@ import handleLogin from "./asyncResponses/credentialChecker.js";
 
 import DisplayMenu from "./uiComponents/mainUI.js";
 
+// loading screen
+import LoadingScreen from "./uiComponents/loading.js";
+
+// Switcher
+import {SimpleSwitcher} from "./tools/selectionToggler.js";
+
 const gradescope = new main();
 const PATH = new path();
 // this.pageFillers
@@ -23,7 +29,7 @@ const PATH = new path();
 
 
 
-async function loginState( {setLogin, setCookie}) // This function is always loaded first, therefore, load browser should be called here.
+async function loginState( {setLogin, setCookie, setMenu}) // This function is always loaded first, therefore, load browser should be called here.
 {
   await gradescope.loadBrowser(); // https://gradescope.com/login
   
@@ -40,14 +46,19 @@ async function loginState( {setLogin, setCookie}) // This function is always loa
   */
 
   const result = await gradescope.login();
+
   if (result == false) // This means There isn't a cookie to be loaded 
   {
     setLogin("login");
+
+    // This login state is the section where the cookie is created
+    setMenu("submit");
   }
   else
   {
     setLogin("loadCourses");
-    setCookie(true)
+    setMenu("main");
+    setCookie(true);
   }
 
 }
@@ -80,12 +91,87 @@ function App() { // This will be a
   let [currentCourseDetails, setCurrentCourseDetails] = useState(null); // contains course's details. assignments' statuses and how and where to submit them.
   
   let [currentAssignmentDetails, setCurrentAssignmentDetails] = useState(null); 
+  
+  // username and password input fields. toggle between the two
+  let loginOptions = ["username", "password"]; // These are the options the switching function can toggle between
+  let [inputField, setField] = useState("username") // Only Options ["username", "password"]
+  let [inputIndex, setInputIndex] = useState(0) // Due to the rerendering, we cannot store the index variable in the component  
+
+  let [credentialValidity, setCredentialValidity] = useState(null);
+  
+  // Likewise with setError, I think taking advantage of that area would be perfect, since it basically does what ours does too.
+
+
+
+
+
 
 
   // These are the three states this program can be in, main to select one of the two. submit is for submitting assignments. fileChooser is for changing the path or creating a path for file submission locations.
-	const [menu, setMenu] = useState<'main' | 'submit' | 'fileChooser'>('main');
+	const [menu, setMenu] = useState< 'main' | 'submit' | 'fileChooser' | 'loading' | "login"> ('loading');
   
   // Having these states will be very benefical later on. Having different states will be easier to handle since I can now distguish current and previous proccesses. Therefore, I can create a system toggling between different states and processes.
+
+
+
+
+
+
+  // Username and password functions
+  const tryLogin = async () => 
+  {
+    setMenu('loading');
+
+    let success = await handleLogin({
+      setTryAgain,
+      setLogin,
+      setValid, 
+      setUsername,
+      setPassword,
+      username,
+      password,
+      page,
+      setPage,
+      setErrorMsg,
+      inputFill : gradescope.pageFillers,
+      storage : gradescope.cookieStorage,
+      setCookie
+    });
+
+    if(!success)
+    {
+      // the code it requires to reset login state to focus on username input field.
+      setField("username");
+      setInputIndex(0);
+
+
+
+      setCredentialValidity(false);
+      setMenu("login");
+      // Set the error messages here
+    }
+    else
+    { // webpage has been redirected to the main menu
+
+      setMenu("main");
+    }   
+  };
+
+  const validUsername = () => 
+  {
+  // If there is a username submission, respond to that with either an error message or a switch in the input fields
+    setField("password");
+    setInputIndex(1)
+  }
+
+  const resetAll = () => 
+  {
+    // After all login attempts, the username inputfield becomes the main.
+    // Both password and username input fields are highlighted red.
+    if(!credentialValidity) 
+      setCredentialValidity(null); 
+  }
+
 
   React.useEffect( () => 
   {
@@ -100,7 +186,7 @@ function App() { // This will be a
 
   React.useEffect( () => 
   {
-    loginState({setLogin,setCookie});
+    loginState({setLogin,setCookie,setMenu});
 
   }, []);
 
@@ -122,10 +208,11 @@ function App() { // This will be a
   }, [currentAssignmentDetails])
   
 
-  if ( login === "loading" )
+  if ( login === "loading" || menu == "loading" )
   {
-      return <Text>Loading...</Text>;
+      return(<LoadingScreen/>);
   }
+
   if (login == "loadCourses" && renderedCourses == false)
   {
     setRender(true)
@@ -135,7 +222,6 @@ function App() { // This will be a
   
   if(menu == "main")
   {
-  console.log(menu, "this is currently menu")
     return(<DisplayMenu 
       setMenu={setMenu}
       currentPath=
@@ -153,94 +239,101 @@ function App() { // This will be a
 
 
   // There needs to be some set up of what needs to be called from the very begining. 
+  
 
-  const submissionRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
-  {
-    if (!cookie || !renderedCourses)
-    {
-      return (
-        <Box // TUI container/courses/964364/assignments/5652838/submissions
+  
+
+  const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
+  (
+
+      <Box // TUI container/courses/964364/assignments/5652838/submissions
           flexDirection={"column"}
-          borderStyle="double"
           justifyContent="center"
           alignItems="center"
           padding={1}
-        >
+      >
 
-        <Box width={50} flexDirection="column">
-        <Text color="red" > {loginErrorMsg ? loginErrorMsg : ""} </Text>
-        </Box>
+      <Box width={50} flexDirection="column">
+      <Text color="red" > {loginErrorMsg ? loginErrorMsg : ""} </Text>
+      </Box>
+        
+      <SimpleSwitcher          /* Simply a controler, doesn't really display anything*/    
+          Vertical={true}
+          Horizontal={false}
+          Setter={setField}
+          list={loginOptions}
+          index={inputIndex}
+          setIndex={setInputIndex}
+        />
 
-        {valid == true ? 
-          <PasswordHandler
-            username={username}
-            password={password}
-            setPassword={setPassword}
-            func=
-            { () => 
-              {
-                handleLogin({ // Resetting all the elements
-                  setTryAgain,
-                  setLogin,
-                  setValid, 
-                  setUsername,
-                  setPassword,
-                  username,
-                  password,
-                  page,
-                  setPage,
-                  setErrorMsg,
-                  inputFill : gradescope.pageFillers,
-                  storage : gradescope.cookieStorage,
-                  setCookie
-                })
-              }
-            } // This is the function that tries our login, if valid show assignments, else try again!
+        <UsernameComponent
+          prompts={gradescope.prompts}
+          setValid = {setValid}
+          username = {username}
+          setUsername = {setUsername}
+          active={inputField == "username" ? true : false}
+
+          // (Enter Key) Two outcomes to submitting a username
+          submitResponse={credentialValidity}
+          validResponse={validUsername}
+
+          credentialValidity={credentialValidity}
+          resetAll={resetAll}
+         />
+     
+        <PasswordHandler
+          username={username}
+          password={password}
+          setPassword={setPassword}
+          active={inputField == "password" ? true : false}
+          submitResponse={credentialValidity}
+          func={tryLogin} 
           /> 
-        :
-          <UsernameComponent
-            prompts={gradescope.prompts}
-            setValid = {setValid}
-            username = {username}
-            setUsername = {setUsername}
-          />
-        }
         </Box> 
-      )
-    };
-
-    if(course && currentCourseDetails) // if there's a course's href assigned that means there is a course.
-    {
-      //console.log(currentAssignmentDetails)
-      return(
-      <Box>
+    )
+  
+  const assignmentRendering = () => 
+  (
+    <Box>
         <AssignmentToggler 
           result={currentCourseDetails}
           setCurrentAssignmentDetails={setCurrentAssignmentDetails}
           setMenu={setMenu}
         />
-        
-        
+    </Box>
+  );
 
-      </Box>
-      )
-    }
 
-    return (
-        <CourseToggler
-          courses={gradescope.courses}
-          setCourse={setCourse}
-          setMenu={setMenu}
-        /> 
-      );
-  };
+  const courseRendering = () => 
+  (
+    <CourseToggler
+      courses={gradescope.courses}
+      setCourse={setCourse}
+      setMenu={setMenu}
+    /> 
+  );
 
+
+
+  if( (menu == 'login') || !cookie)
+  {
+    return loginRendering();
+  }
+  
   if(menu == "submit")
   {
-    return (
-    <>{submissionRendering()}</>
-    )
+    return assignmentRendering();
   }
+  
+  /*
+   
+    Gotta figure out a comparison for the course rendering part
+
+  if(true == false)
+  {
+    return courseRendering();
+  }*/
+
 }
 
 render(<App/>)

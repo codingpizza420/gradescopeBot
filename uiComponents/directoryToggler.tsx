@@ -3,7 +3,7 @@ import React, { useState, ChangeEvent, useEffect, useRef} from "react";
 import {render, Box, Text} from "ink";
 import Path from "../features/path.js";
 import {DirectoryModel, DirectoryPreview} from "./directoryModel.js";
-import {Toggler, Switching} from "../tools/selectionToggler.js";
+import {Toggler, SwitchingStates} from "../tools/selectionToggler.js";
 
 import {Section, PreviewDisplayer}from "../tools/sectionToggler.js";
 const pathController = new Path();
@@ -229,7 +229,7 @@ function PathChooser({setMenu})
  
       </Box>
       
-      <Switching
+      <SwitchingStates
         switchForward={switchForwardState}
         switchBackward={switchBackwardState}
         valid={preview.stats.length < 1 ? false : true} // This is a simple fix, since we have a preview, we can just set the new curretItems variable to this preview. 
