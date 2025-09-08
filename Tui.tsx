@@ -44,15 +44,14 @@ async function loginState( {setLogin, setCookie, setMenu}) // This function is a
     For the part of keeping this project clean, and a lot of reusable code, I need these references.
 
   */
-
+  
   const result = await gradescope.login();
-
   if (result == false) // This means There isn't a cookie to be loaded 
   {
     setLogin("login");
 
     // This login state is the section where the cookie is created
-    setMenu("submit");
+    setMenu("login");
   }
   else
   {
@@ -108,7 +107,7 @@ function App() { // This will be a
 
 
   // These are the three states this program can be in, main to select one of the two. submit is for submitting assignments. fileChooser is for changing the path or creating a path for file submission locations.
-	const [menu, setMenu] = useState< 'main' | 'submit' | 'fileChooser' | 'loading' | "login"> ('loading');
+	const [menu, setMenu] = useState<'main' | 'submit' | "loadCourses" |'fileChooser' | 'loading' | "login"> ('loading');
   
   // Having these states will be very benefical later on. Having different states will be easier to handle since I can now distguish current and previous proccesses. Therefore, I can create a system toggling between different states and processes.
 
@@ -212,13 +211,6 @@ function App() { // This will be a
   {
       return(<LoadingScreen/>);
   }
-
-  if (login == "loadCourses" && renderedCourses == false)
-  {
-    setRender(true)
-    return <Text>Welcome back! loading courses</Text>;
-  }
-
   
   if(menu == "main")
   {
@@ -246,7 +238,7 @@ function App() { // This will be a
   const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
   (
 
-      <Box // TUI container/courses/964364/assignments/5652838/submissions
+      <Box
           flexDirection={"column"}
           justifyContent="center"
           alignItems="center"
@@ -320,9 +312,15 @@ function App() { // This will be a
     return loginRendering();
   }
   
+  if(menu == "loadCourses")
+  {
+    return courseRendering();
+  }
+
   if(menu == "submit")
   {
-    return assignmentRendering();
+    // This is the section you'll be able to submit assignments from
+    return
   }
   
   /*

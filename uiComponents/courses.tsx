@@ -58,7 +58,6 @@ function DisplayCourses({courses, activeElement})
     flexDirection="row"
     gap={5}
 
-    height={process.stdout.rows}
     justifyContent="center"
     alignItems="center"
   >

@@ -38,14 +38,11 @@ function DisplayMenu( { setMenu, currentPath} )
    return (
   <Box 
     flexDirection="column"
-    height={process.stdout.rows}
     justifyContent="center"
     alignItems="center"
   >
     <Box 
     marginBottom={1}
-   //borderStyle="round"
-    //borderColor="cyan"
     ><Text>GradeScope Bot</Text></Box> 
 
     <Box>
@@ -70,7 +67,7 @@ function DisplayMenu( { setMenu, currentPath} )
           // the options are this simple only because there are two options
           if(activeElement == 0)
           {
-            setMenu("submit")
+            setMenu("loadCourses")
           }
           else
           {

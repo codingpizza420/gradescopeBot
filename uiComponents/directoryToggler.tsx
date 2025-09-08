@@ -28,7 +28,7 @@ function displayItems(items, pointer, previewItems, currentDirectory)
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      height={process.stdout.rows}
+      //height={process.stdout.rows}
       gap={2} 
       
 
@@ -86,13 +86,29 @@ function displayItems(items, pointer, previewItems, currentDirectory)
 
       </Box>
     </Box>
-    
+      
+
       <Box
-        width={process.stdout.columns}
-      // This box displays the current path. You can choose to type instead or just watch how it changes
-        justifyContent="flex-start"
+      /* Problems that'll need to be faced
+        
+         So far, a fix to our large directory names is to display the directory name fully at first and shrink it to a certain length.
+
+         /Users/Pizza/largeFolderNameeeeeeeeeeee
+          (turns into)
+         /Users/Pizza/LargeFolderName.../
+
+
+         For this large problem of trying to get items to fit in such a small terminal, this is considered a minor solution, however, when these directories stack up,
+         their length again can be limitless. When a text item breaks outside the set space there is a rerender bug.
+      */
+        
+        flexDirection="column"
+        alignItems="center"
+        width="100%"
+
       >
-      <Text color="blueBright">Current Directory : </Text><Text color="white" wrap="truncate">{currentDirectory}</Text>
+      <Text color="white">Current Directory</Text>
+      <Text color="white" dimColor={true} wrap="truncate">{currentDirectory}</Text>
       </Box>
 
 
@@ -101,11 +117,27 @@ function displayItems(items, pointer, previewItems, currentDirectory)
 }
 
 
+function directoryNameLimit(name)
+{
+  // There needs to be some regulation with the sizing of directory names
+  // This variable stores the max size for directory names
+  const maxSize = 9;
+
+  if(name.length > maxSize)
+    return `${name.slice(0,maxSize)}...`;
+  
+  return name;
+}
 
 
 function PathChooser({setMenu})
 {
   let [currentDirectory, changeDirectory] = useState(pathController.currentDirectory);
+  
+  // There needs to be a limit to how large the directory could get, not only handling large chucks of text but preventing excess amounts of it
+  let [displayedDirectory, changeDisplayedDirectory] = useState(currentDirectory);
+  let previousDisplayed = useRef([displayedDirectory]);
+
   // The pop grabs the latest item
   let [currentItems, changeItems] = useState(pathController.directoryLayers[pathController.directoryLayers.length - 1]);
   
@@ -129,8 +161,13 @@ function PathChooser({setMenu})
     if (forward == true) 
     {
       // Only run on actual changes to currentItems
-      changeDirectory(`${pathController.currentDirectory}/${currentItems.stats[activeElement].name}`);
+      //console.log(displayedDirectory, currentItems.stats[activeElement].name, directoryNameLimit(currentItems.stats[activeElement].name))
+      changeDisplayedDirectory(`${displayedDirectory}/${directoryNameLimit(currentItems.stats[activeElement].name)}`);
 
+      previousDisplayed.current.push(displayedDirectory);
+
+
+      changeDirectory(`${pathController.currentDirectory}/${currentItems.stats[activeElement].name}`);
       pathController.enterDirectory(currentItems.stats[activeElement].name);
 
       // resetting the pointer and state. Setting the new Items
@@ -151,6 +188,10 @@ function PathChooser({setMenu})
         const canLeave = await pathController.leaveDirectory();
         if (canLeave) {
           // Update the state for the previous directory
+          
+          const string = previousDisplayed.current.pop();
+          changeDisplayedDirectory(string);
+          
           changeDirectory(pathController.currentDirectory);
           // Change preview to current, change current to past.
 
@@ -192,16 +233,11 @@ function PathChooser({setMenu})
   return(
     <Box
       flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
       gap={1}
     >
         
-      <Box
-      // This box displays the current path. You can choose to type instead or just watch how it changes
-      >
-      <Text>Current Directory : {currentDirectory}/{currentItems.stats[activeElement].name}</Text>
-      </Box>
-
-
       <Box
       // This box in the current directory container, contains all the names of the directories in the current directory.
       >
@@ -215,7 +251,7 @@ function PathChooser({setMenu})
         {
           // Displaying <Sections>
           // currentItems comes as items and total size
-          return displayItems(currentItems.stats, activeElement, preview.stats, `${currentDirectory}/${currentItems.stats[activeElement].name}`)
+          return displayItems(currentItems.stats, activeElement, preview.stats, `${displayedDirectory}/${currentItems.stats[activeElement].name}`)
 
         }}
         verticalArrows={true}
@@ -277,14 +313,4 @@ left and right arrow keys handle leaving and entering directories.
 
 
 */
-
-
-
-
-// This function returns the current path set. while will be displayed in the main state.
-function CurrentPath() // Also contains path verifier, if a path is set but doesn't exists it will notify.
-{
-  return pathController.currentDirectory;
-}
-
 export default PathChooser;

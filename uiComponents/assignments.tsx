@@ -61,7 +61,7 @@ function DisplayAssignments({assignments, pointer}) // pointer + 1 due to zeroth
     <Box 
       flexDirection="column" 
       gap={1}
-      height={process.stdout.rows}
+      //height={process.stdout.rows}
       justifyContent="center"
       alignItems="center"
       borderStyle="round"

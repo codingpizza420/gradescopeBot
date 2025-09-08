@@ -1,20 +1,26 @@
 import React from "react";
-import {render, Text} from "ink";
+import {render, Text, Box, useStdout} from "ink";
 import Spinner from "ink-spinner";
 
 function LoadingScreen()
 {
+  
   return(
 
-    <Text>
-      <Text color="green" >
-        <Spinner type="clock" />
+    <Box
+      flexDirection="column"
+      flexGrow={1}
+      justifyContent="center"
+      alignItems="center"
+      
+    >
+
+      <Text color="white" >
+        Loading
+        <Spinner type="simpleDots" />
       </Text>
 
-      {'loading...'}
-
-    </Text>
-    
+    </Box>    
   )
 
 }
