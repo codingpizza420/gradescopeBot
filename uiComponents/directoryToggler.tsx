@@ -130,15 +130,12 @@ function directoryNameLimit(name)
 }
 
 
-function PathChooser({setMenu})
+function PathChooser({setMenu, displayedDirectory, changeDisplayedDirectory, previousDisplayed})
 {
   let [currentDirectory, changeDirectory] = useState(pathController.currentDirectory);
   
   // There needs to be a limit to how large the directory could get, not only handling large chucks of text but preventing excess amounts of it
-  let [displayedDirectory, changeDisplayedDirectory] = useState(currentDirectory);
-  let previousDisplayed = useRef([displayedDirectory]);
-
-  // The pop grabs the latest item
+  
   let [currentItems, changeItems] = useState(pathController.directoryLayers[pathController.directoryLayers.length - 1]);
   
 
@@ -154,14 +151,12 @@ function PathChooser({setMenu})
   let [backward, switchBackwardState] = useState(false);
 
   // Preview of current section
-  //
 
   useEffect(() => 
   {
     if (forward == true) 
     {
       // Only run on actual changes to currentItems
-      //console.log(displayedDirectory, currentItems.stats[activeElement].name, directoryNameLimit(currentItems.stats[activeElement].name))
       changeDisplayedDirectory(`${displayedDirectory}/${directoryNameLimit(currentItems.stats[activeElement].name)}`);
 
       previousDisplayed.current.push(displayedDirectory);
@@ -191,7 +186,6 @@ function PathChooser({setMenu})
           
           const string = previousDisplayed.current.pop();
           changeDisplayedDirectory(string);
-          
           changeDirectory(pathController.currentDirectory);
           // Change preview to current, change current to past.
 

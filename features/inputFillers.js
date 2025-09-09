@@ -28,7 +28,6 @@ class inputFillers
      } 
      catch(e)
      {
-       console.log("The user was found!");
        return true
      }
   }

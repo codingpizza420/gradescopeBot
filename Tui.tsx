@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useRef, useState, ChangeEvent } from "react";
 import {render, Box, Text} from "ink";
 
 // ui-Components
@@ -98,6 +98,11 @@ function App() { // This will be a
 
   let [credentialValidity, setCredentialValidity] = useState(null);
   
+  // For directory Toggler
+  let [displayedDirectory, changeDisplayedDirectory] = useState(PATH.currentDirectory);
+  let previousDisplayed = useRef([displayedDirectory]);
+
+
   // Likewise with setError, I think taking advantage of that area would be perfect, since it basically does what ours does too.
 
 
@@ -225,7 +230,7 @@ function App() { // This will be a
 
   if(menu == "fileChooser")
   {
-    return(<PathChooser setMenu={setMenu}/>)
+    return(<PathChooser setMenu={setMenu} displayedDirectory={displayedDirectory} changeDisplayedDirectory={changeDisplayedDirectory} previousDisplayed={previousDisplayed}/>)
   }
 
 
