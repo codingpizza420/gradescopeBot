@@ -66,7 +66,8 @@ async function assignmentState({course, setCurrentCourseDetails})
 {
   const result = await gradescope.enterCourse(course);
   setCurrentCourseDetails(result);
-} 
+};
+
 
 
 function App() { // This will be a  
@@ -106,6 +107,25 @@ function App() { // This will be a
   // Likewise with setError, I think taking advantage of that area would be perfect, since it basically does what ours does too.
 
 
+  // This is for login state 
+  function validateUsername()
+  {
+    const validity = gradescope.prompts.verifyUsername(username); // u
+    if( validity.valid == false)
+    {
+      setUsername("");
+      setValid(false);
+      return validity.msg;
+    }
+    else // The username is valid to be submitted, however, the actual credentials haven't been determined yet.
+    {
+      setValid(true);
+
+      // username is valid, move onto the password input field
+      validUsername();
+      return false;
+    }
+  };
 
 
 
@@ -142,6 +162,7 @@ function App() { // This will be a
       setCookie
     });
 
+    console.log("something must've went wrong here ", success)
     if(!success)
     {
       // the code it requires to reset login state to focus on username input field.
@@ -161,12 +182,16 @@ function App() { // This will be a
     }   
   };
 
+
+
   const validUsername = () => 
   {
   // If there is a username submission, respond to that with either an error message or a switch in the input fields
     setField("password");
     setInputIndex(1)
-  }
+  };
+
+
 
   const resetAll = () => 
   {
@@ -202,7 +227,6 @@ function App() { // This will be a
     }
   }, [course] ) // Setting course as a dependency 
   
-
   React.useEffect( () => 
   {
     if(currentAssignmentDetails != null)
@@ -234,13 +258,8 @@ function App() { // This will be a
   }
 
 
-
-  // There needs to be some set up of what needs to be called from the very begining. 
   
-
-  
-
-  const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
+    const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
   (
 
       <Box
@@ -264,18 +283,16 @@ function App() { // This will be a
         />
 
         <UsernameComponent
-          prompts={gradescope.prompts}
-          setValid = {setValid}
           username = {username}
           setUsername = {setUsername}
           active={inputField == "username" ? true : false}
 
           // (Enter Key) Two outcomes to submitting a username
           submitResponse={credentialValidity}
-          validResponse={validUsername}
 
           credentialValidity={credentialValidity}
           resetAll={resetAll}
+          validateUsername={validateUsername}
          />
      
         <PasswordHandler

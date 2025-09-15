@@ -4,29 +4,25 @@ import {TextInput} from '@inkjs/ui';
 
 import InputBox from "../tools/inputQueries.js";
 
-function UsernameComponent( {prompts, setValid, username, setUsername, active, submitResponse, validResponse, resetAll, credentialValidity } ) // username parameter is important for displaying the usernameEntered
+function UsernameComponent( {username, setUsername, active, submitResponse, resetAll, credentialValidity, validateUsername} ) // username parameter is important for displaying the usernameEntered
 {
   const [error, setError] = useState(false);
 
-  
-  const validateUsername = (u) => 
-  { 
-    const validity = prompts.verifyUsername(u);
-    if( validity.valid == false)
+  const validateUser = function()
+  {
+    const userResponse = validateUsername();
+    if(!userResponse)
     {
-      setUsername("");
-      setError(validity.msg);
-      setValid(false);
+      setError(false)
     }
-    else // The username is valid to be submitted, however, the actual credentials haven't been determined yet.
+    else
     {
-      setError(false);
-      setValid(true);
-
-      // username is valid, move onto the password input field
-      validResponse();
+      setError(userResponse);
     }
   }
+
+
+  //setError(usernameResponse); // this can either be an an error message or a boolean of false
 
   const settingUsername = (u) =>
   {
@@ -38,6 +34,8 @@ function UsernameComponent( {prompts, setValid, username, setUsername, active, s
       resetAll();
     }
   }
+
+
 
   return (
 
@@ -68,7 +66,7 @@ function UsernameComponent( {prompts, setValid, username, setUsername, active, s
         currentlyVisible={true}
         error={error || (submitResponse == false) ? true : false}
         setError={setError}
-        func={ () => {validateUsername(username)}}
+        func={ validateUser }
       />
     </Box>
   )
