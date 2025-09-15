@@ -4,9 +4,8 @@ import {TextInput} from '@inkjs/ui';
 
 import InputBox from "../tools/inputQueries.js";
 
-function UsernameComponent( {username, setUsername, active, submitResponse, resetAll, credentialValidity, validateUsername} ) // username parameter is important for displaying the usernameEntered
+function UsernameComponent( {username, setUsername, active, submitResponse, resetAll, credentialValidity, validateUsername, error, setError} ) // username parameter is important for displaying the usernameEntered
 {
-  const [error, setError] = useState(false);
 
   const validateUser = function()
   {

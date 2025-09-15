@@ -7,7 +7,6 @@ class inputFillers
 
   async fillLoginDetails(username, password)
   {
-    await this.page.screenshot({path : "whatisgoingon.png"})
     await this.page.locator("#session_email").fill(username);
     await this.page.locator("#session_password").fill(password);
     await this.page.locator(".tiiBtn-full").click();

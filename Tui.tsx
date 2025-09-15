@@ -35,7 +35,7 @@ async function loginState( {setLogin, setCookie, setMenu}) // This function is a
   
   /*
 
-    With calling this function I can use the following attributes
+With calling this function I can use the following attributes
     this.page = the current page
     this.browser = virtual browser
     this.pageFillers = page filler class, alongside containg the reference to the current page.
@@ -103,8 +103,18 @@ function App() { // This will be a
   let [displayedDirectory, changeDisplayedDirectory] = useState(PATH.currentDirectory);
   let previousDisplayed = useRef([displayedDirectory]);
 
-
   // Likewise with setError, I think taking advantage of that area would be perfect, since it basically does what ours does too.
+
+  
+  
+  // [error, setError] are no longer valid, parent componenets need more interference for more functionality
+
+  const [usernameError, setUsernameError] = useState<string | boolean>(false);
+  const [passwordError, setPasswordError] = useState(false);
+
+  
+
+  
 
 
   // This is for login state 
@@ -144,8 +154,21 @@ function App() { // This will be a
   // Username and password functions
   const tryLogin = async () => 
   {
-    setMenu('loading');
+    // Before we can make a submission attempt of a username and password, we must first see if the username is valid enough to submit. 
+    const usernameCheck = validateUsername();
 
+    if(usernameCheck) 
+    { 
+      // We make a username check first to see if it's even valid enough to submit. This conditional is if it isn't 
+      setField("username");
+      setInputIndex(0);
+      setCredentialValidity(false);
+      setPassword("");
+      setUsernameError(usernameCheck);
+      return; 
+    }
+    // The username was valid to submit the login form
+    setMenu('loading');
     let success = await handleLogin({
       setTryAgain,
       setLogin,
@@ -162,24 +185,17 @@ function App() { // This will be a
       setCookie
     });
 
-    console.log("something must've went wrong here ", success)
-    if(!success)
-    {
-      // the code it requires to reset login state to focus on username input field.
+    if(success)
+      setMenu("main")  
+
+    else
+      {
+        // the code it requires to reset login state to focus on username input field.
       setField("username");
       setInputIndex(0);
-
-
-
       setCredentialValidity(false);
       setMenu("login");
-      // Set the error messages here
     }
-    else
-    { // webpage has been redirected to the main menu
-
-      setMenu("main");
-    }   
   };
 
 
@@ -293,6 +309,8 @@ function App() { // This will be a
           credentialValidity={credentialValidity}
           resetAll={resetAll}
           validateUsername={validateUsername}
+          error={usernameError}
+          setError={setUsernameError}
          />
      
         <PasswordHandler
@@ -302,6 +320,8 @@ function App() { // This will be a
           active={inputField == "password" ? true : false}
           submitResponse={credentialValidity}
           func={tryLogin} 
+          error={passwordError}
+          setError={setPasswordError}
           /> 
         </Box> 
     )

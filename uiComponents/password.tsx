@@ -3,9 +3,8 @@ import {Box, Text, useInput} from "ink";
 import InputBox from "../tools/inputQueries.js";
 
 
-function PasswordHandler( {username, password, setPassword, active ,submitResponse, func} ) // Only will be called if username is acceptable to gradescope standard
+function PasswordHandler( {username, password, setPassword, active ,submitResponse, func, error, setError} ) // Only will be called if username is acceptable to gradescope standard
 {
-  let [error, setError] = useState(false);
 
   return (
 		<Box flexDirection="column" 
