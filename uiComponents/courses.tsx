@@ -84,7 +84,6 @@ function setHref({href, setCourse}) // href could be found at courses.href
 
 function CourseToggler({courses, setCourse, setMenu})
 {
-  
   let [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest course.
   return (
     <Toggler 

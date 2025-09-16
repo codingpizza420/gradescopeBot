@@ -169,6 +169,7 @@ function App() { // This will be a
     }
     // The username was valid to submit the login form
     setMenu('loading');
+
     let success = await handleLogin({
       setTryAgain,
       setLogin,
@@ -185,9 +186,13 @@ function App() { // This will be a
       setCookie
     });
 
-    if(success)
+    // after waiting for the validity of the login credentials, we must wait for the courses to load.
+    const loadedCourses = await gradescope.courseSelector();
+    
+    if(success && loadedCourses)
+    {
       setMenu("main")  
-
+    }
     else
       {
         // the code it requires to reset login state to focus on username input field.
