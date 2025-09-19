@@ -76,15 +76,37 @@ function DisplayCourses({courses, activeElement})
 }
 
 
-function setHref({href, setCourse}) // href could be found at courses.href
+async function setHref({href, course, setCourse, courseData, addCourseData, getCourseData}) // href could be found at courses.href
 {
-  setCourse(href);
+  // this is the reference we're referring to 
+  // [course, setCourse]
+  // Course is an object with this model {`course/${unique course id}` : [course data...]}
+ 
+  /*
+   Don't put all the code for the loading screen here, but it's appropriate to put a loading screen here while the data loads.
+  */
+  let data = await getCourseData(href);
+
+  // While we're waiting for the data, add the loading screen, 
+  console.log(data);
+  if(!courseData[`${href}`]) // if the course doesn't exist in the hashtable
+  {
+    addCourseData(oldData => 
+    ({
+      ...oldData,            // keep old courses
+      [href]: [data]       // set/replace this one
+    }));
+  };
+
+  console.log(courseData);
+  return;
 };
 
 
-function CourseToggler({courses, setCourse, setMenu})
+function CourseToggler({courses, setCourse, setMenu, courseData, addCourseData, getCourseData})
 {
   let [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest course.
+
   return (
     <Toggler 
       pointerLimit={courses.length - 1}
@@ -94,7 +116,7 @@ function CourseToggler({courses, setCourse, setMenu})
       {
         () => 
         {
-          setHref({ href: courses[activeElement].href, setCourse });
+          setHref({ course : courses, href: courses[activeElement].href, setCourse, courseData:courseData, addCourseData : addCourseData, getCourseData : getCourseData});
         }
       }
         DisplayElements=

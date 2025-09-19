@@ -134,7 +134,6 @@ function PreviewDisplayer({items, limit, renderComponent})
     }
   }
 
-
 export {Section, PreviewDisplayer};
 
 

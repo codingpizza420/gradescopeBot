@@ -3,7 +3,6 @@ import * as puppeteer from 'puppeteer';
 import cookieStorage from "./browserStorage.js";
 //const {Path} = require("./path.js");
 import inputFillers from './inputFillers.js';
-import serverPrompts from './serverPrompts.js';
 
 class main
 {
@@ -41,7 +40,6 @@ class main
 
     this.pageFillers = new inputFillers(this.page);
     this.cookieStorage = new cookieStorage(this.page);
-    this.prompts = new serverPrompts();
 
     return this.page;
   }

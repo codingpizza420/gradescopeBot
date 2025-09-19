@@ -85,6 +85,9 @@ function App() { // This will be a
   
   let [course, setCourse] = useState(null); // This contains the href of the course. This href can be used to rediret me
 
+  // This is a big hashtable containg hrefs referencing course data. This will be used for caching purposes. Quicker course traversals.
+  let [courseData, addCourseData] = useState({})
+
   let [currentPath, setPath] = useState(null);
 
   // One of the most important parts of this project is saving time, therefore we'll need to store the courses we open.
@@ -255,7 +258,7 @@ function App() { // This will be a
       console.log("It WorkdEd!")
     }
   }, [currentAssignmentDetails])
-  
+ 
 
   if ( login === "loading" || menu == "loading" )
   {
@@ -349,6 +352,12 @@ function App() { // This will be a
       courses={gradescope.courses}
       setCourse={setCourse}
       setMenu={setMenu}
+      courseData={courseData}
+      addCourseData={addCourseData}
+      // This function is used to read the course page and return its data
+      // https://www.gradescope.com/courses/${href}
+      // Also remember we're using main.js to keep control of the puppeteer page
+      getCourseData = { (href) => gradescope.enterCourse(href) }
     /> 
   );
 
