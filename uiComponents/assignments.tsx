@@ -97,12 +97,29 @@ function setAssignment({setCurrentAssignmentDetails, assignment})
 function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu})
 {
 // Result contains 3 objects
+
   const {assignments, gradedAssignments} = result;
   const [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest assignment. 
-  // minus one because we need to start at the zeroth index
-  const limit = assignments.length - 1;
 
+  // minus one because we need to start at the zeroth index
+  const limit = assignments.length == 0 ? 0 : assignments.length - 1;
+  
+  /*
+   Currently there are 2 statuses, (submit and or resubmit) and (graded)
+
+    This one is pretty easily to distinguish because of how gradescope was programmed. If it has no clickable link or the assignments date is due, then you cannot resubmitt it. the program will not let you. However, if it does that it is something resubmittable. Very basic.
+  */
+
+
+  // This is the menu to choose whether to resubmit or to view a grade. 
   return(
+
+  <Box>
+    
+  </Box>
+
+  )
+  /*return(
     
     <Toggler
       pointerLimit={limit}
@@ -125,7 +142,10 @@ function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu})
       setMenu = {setMenu}
       location={"main"}
     />
-  );
+  );*/
+
+
+
 };
 
 export default AssignmentToggler;

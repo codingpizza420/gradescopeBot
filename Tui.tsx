@@ -62,14 +62,6 @@ With calling this function I can use the following attributes
 
 }
 
-async function assignmentState({course, setCurrentCourseDetails})
-{
-  const result = await gradescope.enterCourse(course);
-  setCurrentCourseDetails(result);
-};
-
-
-
 function App() { // This will be a  
   // Starting up the browser, the async will not allow you to set page to gradescope.page
   let [page, setPage] = useState(gradescope.page) // This is the currentPage
@@ -88,10 +80,11 @@ function App() { // This will be a
   // This is a big hashtable containg hrefs referencing course data. This will be used for caching purposes. Quicker course traversals.
   let [courseData, addCourseData] = useState({})
 
+
+
   let [currentPath, setPath] = useState(null);
 
   // One of the most important parts of this project is saving time, therefore we'll need to store the courses we open.
-  let [currentCourseDetails, setCurrentCourseDetails] = useState(null); // contains course's details. assignments' statuses and how and where to submit them.
   
   let [currentAssignmentDetails, setCurrentAssignmentDetails] = useState(null); 
   
@@ -245,10 +238,21 @@ function App() { // This will be a
 
   React.useEffect( () => // Listening for user's input on changing the course
   {
-    if(gradescope.page) // If the page exists, we can run the funcitons
+    /*
+      This runs when course, referencing a href, is changed. 
+      This change is only made through courseToggler. To ensure any further action is taken, we must confirm that the current page is located at address `https://www.gradescope.com/courses/${href}`
+
+
+     */
+
+    // First check if the gradescopes address is valid
+    /*if(gradescope.page.url == `https://www.gradescope.com/${course}`)
     {
-      assignmentState({course, setCurrentCourseDetails});
-    }
+    }*/
+
+
+    setMenu("submit");
+
   }, [course] ) // Setting course as a dependency 
   
   React.useEffect( () => 
@@ -258,7 +262,8 @@ function App() { // This will be a
       console.log("It WorkdEd!")
     }
   }, [currentAssignmentDetails])
- 
+
+  
 
   if ( login === "loading" || menu == "loading" )
   {
@@ -338,7 +343,8 @@ function App() { // This will be a
   (
     <Box>
         <AssignmentToggler 
-          result={currentCourseDetails}
+          // since this can only be called when `course` changes, this is valid
+          result={courseData[`${course}`]}
           setCurrentAssignmentDetails={setCurrentAssignmentDetails}
           setMenu={setMenu}
         />
@@ -376,7 +382,7 @@ function App() { // This will be a
   if(menu == "submit")
   {
     // This is the section you'll be able to submit assignments from
-    return
+    return assignmentRendering();
   }
   
   /*

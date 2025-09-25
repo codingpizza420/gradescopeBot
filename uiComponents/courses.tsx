@@ -86,9 +86,7 @@ async function setHref({href, course, setCourse, courseData, addCourseData, getC
    Don't put all the code for the loading screen here, but it's appropriate to put a loading screen here while the data loads.
   */
   let data = await getCourseData(href);
-
   // While we're waiting for the data, add the loading screen, 
-  console.log(data);
   if(!courseData[`${href}`]) // if the course doesn't exist in the hashtable
   {
     addCourseData(oldData => 
@@ -98,7 +96,12 @@ async function setHref({href, course, setCourse, courseData, addCourseData, getC
     }));
   };
 
-  console.log(courseData);
+  if(data)
+  {
+    // aftering waiting for the data, adding it into the hashtable, we can now reference it.
+    setCourse(href);
+  }
+
   return;
 };
 
