@@ -78,7 +78,10 @@ function App() { // This will be a
   let [course, setCourse] = useState(null); // This contains the href of the course. This href can be used to rediret me
 
   // This is a big hashtable containg hrefs referencing course data. This will be used for caching purposes. Quicker course traversals.
-  let [courseData, addCourseData] = useState({})
+  let [courseData, addCourseData] = useState({});
+
+  // Alongside courseData, synchronous code will continue to run before the href is added to the hashtable. Therefore by setting this state to true, it will not load data until it turns into false. 
+  let [waiting, setWaiting] = useState(true);
 
 
 
@@ -88,10 +91,27 @@ function App() { // This will be a
   
   let [currentAssignmentDetails, setCurrentAssignmentDetails] = useState(null); 
   
+
+
+
+  // SimpleSwitcher
+
   // username and password input fields. toggle between the two
   let loginOptions = ["username", "password"]; // These are the options the switching function can toggle between
   let [inputField, setField] = useState("username") // Only Options ["username", "password"]
   let [inputIndex, setInputIndex] = useState(0) // Due to the rerendering, we cannot store the index variable in the component  
+
+  // assignments and graded assignments
+  
+  let progressMenuOptions = ["assignments", "gradedAssignemnts"];
+  let [progressInputField, setProgressInputField] = useState("assignments");
+  let [progressIndex, setProgressIndex] = useState(0);
+
+
+
+
+
+
 
   let [credentialValidity, setCredentialValidity] = useState(null);
   
@@ -236,25 +256,35 @@ function App() { // This will be a
 
   }, []);
 
-  React.useEffect( () => // Listening for user's input on changing the course
+  React.useEffect( () => 
+  {
+    if(course) // everytime course changes
+    {
+      setWaiting(false);
+      setMenu("submit");
+    }
+
+  }, [course])
+
+  /*React.useEffect( () => // Listening for user's input on changing the course
   {
     /*
       This runs when course, referencing a href, is changed. 
       This change is only made through courseToggler. To ensure any further action is taken, we must confirm that the current page is located at address `https://www.gradescope.com/courses/${href}`
 
 
-     */
+     
 
     // First check if the gradescopes address is valid
     /*if(gradescope.page.url == `https://www.gradescope.com/${course}`)
     {
-    }*/
+    }
 
 
     setMenu("submit");
 
   }, [course] ) // Setting course as a dependency 
-  
+  */
   React.useEffect( () => 
   {
     if(currentAssignmentDetails != null)
@@ -263,6 +293,14 @@ function App() { // This will be a
     }
   }, [currentAssignmentDetails])
 
+
+  React.useEffect( () => 
+  {
+    if(!waiting)
+    { // The async code is done running, the data has been found and placed in a hashtable
+      setWaiting(true); // set it back to true for when another async search begins.
+    }
+  }, [waiting])
   
 
   if ( login === "loading" || menu == "loading" )
@@ -285,8 +323,8 @@ function App() { // This will be a
   {
     return(<PathChooser setMenu={setMenu} displayedDirectory={displayedDirectory} changeDisplayedDirectory={changeDisplayedDirectory} previousDisplayed={previousDisplayed}/>)
   }
-
-
+  
+  
   
     const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
   (
@@ -342,13 +380,26 @@ function App() { // This will be a
   const assignmentRendering = () => 
   (
     <Box>
-        <AssignmentToggler 
-          // since this can only be called when `course` changes, this is valid
-          result={courseData[`${course}`]}
+      <SimpleSwitcher // Toggling between two options
+        Vertical={false}
+        Horizontal={true}
+        Setter={setProgressIndex}
+        list={progressMenuOptions}
+        index={progressIndex}
+        setIndex={setProgressIndex}
+      />
+  
+
+        <AssignmentToggler
+          result={courseData[course]}
           setCurrentAssignmentDetails={setCurrentAssignmentDetails}
           setMenu={setMenu}
+
+          // I'm going to use the index instead of the names
+          active={progressIndex}
         />
-    </Box>
+      </Box>
+
   );
 
 
@@ -364,7 +415,9 @@ function App() { // This will be a
       // https://www.gradescope.com/courses/${href}
       // Also remember we're using main.js to keep control of the puppeteer page
       getCourseData = { (href) => gradescope.enterCourse(href) }
-    /> 
+      setWaiting={setWaiting}
+      
+      /> 
   );
 
 

@@ -2,7 +2,8 @@ import React, {useState} from "react";
 import{render, Box, Text} from "ink";
 import AssignmentModel from "./assignmentStateModels.js";
 import {Toggler} from "../tools/selectionToggler.js";
-
+import ProgressMenu from "../uiComponents/progress-main.js";
+import { ProgressBar } from "@inkjs/ui";
 /*
   
    [assignments] [gradedAssignments] [unfinishedAssignments]
@@ -22,6 +23,8 @@ import {Toggler} from "../tools/selectionToggler.js";
 
 function DisplayAssignments({assignments, pointer}) // pointer + 1 due to zeroth index
 { // We're going to render a subset of the assignments
+
+
   const lengthOfAssignments = assignments.length;
 
   const subsetSize = 5; // number of assignments per subset
@@ -38,7 +41,7 @@ function DisplayAssignments({assignments, pointer}) // pointer + 1 due to zeroth
 
   
   /*
-   These assignments can vary from 60 to n amount.
+     These assignments can vary from 60 to n amount.
    Therefore, we'll organize them into different subsets
    to better fit inside the terminal. 5 will be a good start.
 
@@ -47,7 +50,7 @@ function DisplayAssignments({assignments, pointer}) // pointer + 1 due to zeroth
    assignment
    
    assignment
-   
+
    assignnment
    
    assignment
@@ -72,7 +75,7 @@ function DisplayAssignments({assignments, pointer}) // pointer + 1 due to zeroth
         subsetItems.map((assignment, index) =>
         (
           <AssignmentModel 
-            key={index}
+          key={index}
             text={assignment.text}
             date={assignment.date}
             active={startIndex + index == pointer ? true : false}
@@ -94,28 +97,23 @@ function setAssignment({setCurrentAssignmentDetails, assignment})
 
 
 
-function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu})
+function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu, active})
 {
 // Result contains 3 objects
-
-  const {assignments, gradedAssignments} = result;
-  const [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest assignment. 
-
+  const {assignments, gradedAssignments} = result[0];
+  //const [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest assignment. 
   // minus one because we need to start at the zeroth index
-  const limit = assignments.length == 0 ? 0 : assignments.length - 1;
+  //const limit = assignments.length == 0 ? 0 : assignments.length - 1;
   
-  /*
-   Currently there are 2 statuses, (submit and or resubmit) and (graded)
-
-    This one is pretty easily to distinguish because of how gradescope was programmed. If it has no clickable link or the assignments date is due, then you cannot resubmitt it. the program will not let you. However, if it does that it is something resubmittable. Very basic.
-  */
-
 
   // This is the menu to choose whether to resubmit or to view a grade. 
   return(
-
   <Box>
-    
+   <ProgressMenu
+      assignments={assignments}
+      gradedAssignments={gradedAssignments}
+      active={active}
+   />
   </Box>
 
   )
@@ -147,5 +145,9 @@ function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu})
 
 
 };
+
+// 10/20/25
+//
+// We currently can't see the assignments we can't see yet, so create a browsing system
 
 export default AssignmentToggler;

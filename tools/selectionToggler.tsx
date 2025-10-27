@@ -176,64 +176,44 @@ function SimpleSwitcher({Vertical, Horizontal, Setter, list, index, setIndex}) /
         left and right arrow keys determine the direction we are traversing the indicies 
 
   */
-  
-  useInput( (input, key) => 
-  {
-    if(Vertical)
-    {  
-      if(key.downArrow)
-      {
-        index += 1;
-        if(index > list.length -1)
-        { // since this is adding, we go back to the begining
-          index = 0;
-        }
-      } 
-  
-      if(key.upArrow)
-      {
-        index -= 1;
-        if(index < 0)
-        {
-          index = list.length -1;
-        }
-      }
-
-      Setter(list[index]);
-      setIndex(index);
-
-    }
-    
-    /*
-        
-              Figure out how to get this side without all that extra code
-     
-     if(Horizontal)
+    useInput((input, key) => 
     {
-      if(key.rightArrow)
-      {
+      let newIndex = index;
 
-      } 
-      
-      if(key.leftArrow)
+      if (Vertical) 
       {
+        if (key.downArrow)
+          newIndex++;
 
+        if (key.upArrow)
+          newIndex--;
       }
-    }*/
-    
 
+      if (Horizontal) 
+      {
+        if (key.rightArrow)
+          newIndex++;
 
-    /*if(key.return)
-    { 
-      enterFunction() 
-    }*/
+        if (key.leftArrow)
+          newIndex--;
+      }
 
-  })
+    // Simple Edge cases
+    if (newIndex < 0)
+      newIndex = list.length - 1;
 
-  return "";
+    if (newIndex > list.length - 1)
+      newIndex = 0;
 
+    if (newIndex !== index) 
+    {
+      Setter(list[newIndex]); // Setting the value
+      setIndex(newIndex);     // Saving the change of index value
+    };
 
+  });
 
+  return null;
 }
 
 

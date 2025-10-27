@@ -76,7 +76,7 @@ function DisplayCourses({courses, activeElement})
 }
 
 
-async function setHref({href, course, setCourse, courseData, addCourseData, getCourseData}) // href could be found at courses.href
+async function setHref({href, course, setCourse, courseData, addCourseData, getCourseData, setWaiting, setMenu}) // href could be found at courses.href
 {
   // this is the reference we're referring to 
   // [course, setCourse]
@@ -85,28 +85,39 @@ async function setHref({href, course, setCourse, courseData, addCourseData, getC
   /*
    Don't put all the code for the loading screen here, but it's appropriate to put a loading screen here while the data loads.
   */
-  let data = await getCourseData(href);
-  // While we're waiting for the data, add the loading screen, 
-  if(!courseData[`${href}`]) // if the course doesn't exist in the hashtable
-  {
-    addCourseData(oldData => 
-    ({
-      ...oldData,            // keep old courses
-      [href]: [data]       // set/replace this one
-    }));
-  };
 
-  if(data)
-  {
-    // aftering waiting for the data, adding it into the hashtable, we can now reference it.
-    setCourse(href);
+  
+  setWaiting(true) // This will ensure waiting in between retreiving the data
+  
+  setMenu("loading");
+  let data = await getCourseData(href);
+
+
+  if (!courseData[href]) 
+  { // wait for state update
+    const waitForCourseData = new Promise(resolve => 
+    {
+      addCourseData(oldData => 
+      {
+        const updated = { ...oldData, [href]: [data] };
+        resolve(updated); // we can resolve here if needed
+        return updated;
+      });
+    });
+    
+    // This is the waiting part
+    await waitForCourseData;
   }
 
+
+  if(data) // aftering waiting for the data, adding it into the hashtable, we can now reference it.
+    setCourse(href);
+  
   return;
 };
 
 
-function CourseToggler({courses, setCourse, setMenu, courseData, addCourseData, getCourseData})
+function CourseToggler({courses, setCourse, setMenu, courseData, addCourseData, getCourseData, setWaiting})
 {
   let [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest course.
 
@@ -119,7 +130,7 @@ function CourseToggler({courses, setCourse, setMenu, courseData, addCourseData, 
       {
         () => 
         {
-          setHref({ course : courses, href: courses[activeElement].href, setCourse, courseData:courseData, addCourseData : addCourseData, getCourseData : getCourseData});
+          setHref({ course : courses, href: courses[activeElement].href, setCourse, courseData:courseData, addCourseData : addCourseData, getCourseData : getCourseData, setWaiting : setWaiting, setMenu : setMenu});
         }
       }
         DisplayElements=
