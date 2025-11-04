@@ -43,7 +43,22 @@ import {render, Box, Text} from "ink";
  
 */
 
-function Section({items, limit, pointer, renderComponent}) 
+/*
+  Instructions for using the Section Component
+
+  items referes to the list of items in an array you want to display bits of 
+  
+
+  limit refers to the max amount of items in that array. you can just use array.length. Really simple
+
+  pointer refers to the variable that will carry this change along the bits of render componenets moving along.
+
+  renderComponent refers to the actual component being displayed at a time.
+
+*/
+
+
+function Section({items, limit, pointer, renderComponent, height, width}) 
 { // limit is subset size , pointer will most likely be 0, The render component is the item modal,
 
   const lengthOfItems = items.length;
@@ -67,8 +82,8 @@ function Section({items, limit, pointer, renderComponent})
 
       borderStyle="single"
       borderColor="blue"
-      height={25}
-      width={28}
+      height={height}
+      width={width}
       justifyContent="space-between"
       //alignContent="space"
     >

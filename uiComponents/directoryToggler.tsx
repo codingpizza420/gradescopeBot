@@ -43,6 +43,8 @@ function displayItems(items, pointer, previewItems, currentDirectory)
         items={items}
         limit={limit}
         pointer={pointer}
+        height={25}
+        width={28}
         // This is the part that is rendered
         renderComponent={(item, index, key) => (
           <DirectoryModel
@@ -149,7 +151,6 @@ function PathChooser({setMenu, displayedDirectory, changeDisplayedDirectory, pre
   
   let [forward, switchForwardState] = useState(false); // This determines whether the user clicked a left or right arrow key. Switching of the currentItems.
   let [backward, switchBackwardState] = useState(false);
-
   // Preview of current section
 
   useEffect(() => 
@@ -208,7 +209,6 @@ function PathChooser({setMenu, displayedDirectory, changeDisplayedDirectory, pre
 
 
 
-
   useEffect( () => // This effect is in charge of making sure preview is being updated.
   {
     (async () => 
@@ -220,7 +220,6 @@ function PathChooser({setMenu, displayedDirectory, changeDisplayedDirectory, pre
 
   }, [activeElement, currentItems])
   
-
 
   // For the peaking in directory, we'll display the first 6, if there are more than 7 we'll display a "/..", however, if there are exactly 7 we'll just display the whole thing.
  // The pointer will technically only be on the currentItems column, however, there will be an action to change the directory by hitting the right arrow key, or to leave the current directory by hitting the left key.

@@ -157,7 +157,7 @@ function SwitchingStates({switchForward, switchBackward, valid, updateFileFunc})
 */
 
 
-function SimpleSwitcher({Vertical, Horizontal, Setter, list, index, setIndex}) // This does not display anything, it merley acts as a variable changer  
+function SimpleSwitcher({Vertical, Horizontal, list, index, setIndex}) // This does not display anything, it merley acts as a variable changer  
 {
 
   /* 
@@ -207,7 +207,6 @@ function SimpleSwitcher({Vertical, Horizontal, Setter, list, index, setIndex}) /
 
     if (newIndex !== index) 
     {
-      Setter(list[newIndex]); // Setting the value
       setIndex(newIndex);     // Saving the change of index value
     };
 

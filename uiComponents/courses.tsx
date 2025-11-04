@@ -99,7 +99,7 @@ async function setHref({href, course, setCourse, courseData, addCourseData, getC
     {
       addCourseData(oldData => 
       {
-        const updated = { ...oldData, [href]: [data] };
+        const updated = { ...oldData, [href]: data };
         resolve(updated); // we can resolve here if needed
         return updated;
       });

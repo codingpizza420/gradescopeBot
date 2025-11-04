@@ -97,10 +97,10 @@ function setAssignment({setCurrentAssignmentDetails, assignment})
 
 
 
-function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu, active})
+function AssignmentToggler({result, setCurrentAssignmentDetails, active, setMenu})
 {
 // Result contains 3 objects
-  const {assignments, gradedAssignments} = result[0];
+  const {assignments, gradedAssignments} = result;
   //const [activeElement, setActiveElement] = useState(0); // Starting at the first index, latest assignment. 
   // minus one because we need to start at the zeroth index
   //const limit = assignments.length == 0 ? 0 : assignments.length - 1;
@@ -113,6 +113,7 @@ function AssignmentToggler({result, setCurrentAssignmentDetails, setMenu, active
       assignments={assignments}
       gradedAssignments={gradedAssignments}
       active={active}
+      setMenu={setMenu}
    />
   </Box>
 

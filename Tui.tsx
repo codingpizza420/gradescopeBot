@@ -22,6 +22,8 @@ import LoadingScreen from "./uiComponents/loading.js";
 // Switcher
 import {SimpleSwitcher} from "./tools/selectionToggler.js";
 
+import DisplayAssignments from "./uiComponents/gradedAssignmentViewer.js"
+
 const gradescope = new main();
 const PATH = new path();
 // this.pageFillers
@@ -98,15 +100,14 @@ function App() { // This will be a
 
   // username and password input fields. toggle between the two
   let loginOptions = ["username", "password"]; // These are the options the switching function can toggle between
-  let [inputField, setField] = useState("username") // Only Options ["username", "password"]
   let [inputIndex, setInputIndex] = useState(0) // Due to the rerendering, we cannot store the index variable in the component  
 
   // assignments and graded assignments
   
-  let progressMenuOptions = ["assignments", "gradedAssignemnts"];
-  let [progressInputField, setProgressInputField] = useState("assignments");
+  let progressMenuOptions = ["assignments", "gradedAssignments"];
   let [progressIndex, setProgressIndex] = useState(0);
-
+  
+  // This variable contains what menu choice is chosen to determine what component to display.
 
 
 
@@ -158,7 +159,7 @@ function App() { // This will be a
 
 
   // These are the three states this program can be in, main to select one of the two. submit is for submitting assignments. fileChooser is for changing the path or creating a path for file submission locations.
-	const [menu, setMenu] = useState<'main' | 'submit' | "loadCourses" |'fileChooser' | 'loading' | "login"> ('loading');
+	const [menu, setMenu] = useState<'main' | 'submit' | "loadCourses" |'fileChooser' | 'loading' | "login" | "assignments" | "gradedAssignments"> ('loading');
   
   // Having these states will be very benefical later on. Having different states will be easier to handle since I can now distguish current and previous proccesses. Therefore, I can create a system toggling between different states and processes.
 
@@ -176,7 +177,6 @@ function App() { // This will be a
     if(usernameCheck) 
     { 
       // We make a username check first to see if it's even valid enough to submit. This conditional is if it isn't 
-      setField("username");
       setInputIndex(0);
       setCredentialValidity(false);
       setPassword("");
@@ -212,7 +212,6 @@ function App() { // This will be a
     else
       {
         // the code it requires to reset login state to focus on username input field.
-      setField("username");
       setInputIndex(0);
       setCredentialValidity(false);
       setMenu("login");
@@ -224,7 +223,6 @@ function App() { // This will be a
   const validUsername = () => 
   {
   // If there is a username submission, respond to that with either an error message or a switch in the input fields
-    setField("password");
     setInputIndex(1)
   };
 
@@ -303,6 +301,7 @@ function App() { // This will be a
   }, [waiting])
   
 
+
   if ( login === "loading" || menu == "loading" )
   {
       return(<LoadingScreen/>);
@@ -318,6 +317,8 @@ function App() { // This will be a
       }
     />)
   }
+
+
 
   if(menu == "fileChooser")
   {
@@ -343,7 +344,6 @@ function App() { // This will be a
       <SimpleSwitcher          /* Simply a controler, doesn't really display anything*/    
           Vertical={true}
           Horizontal={false}
-          Setter={setField}
           list={loginOptions}
           index={inputIndex}
           setIndex={setInputIndex}
@@ -352,7 +352,7 @@ function App() { // This will be a
         <UsernameComponent
           username = {username}
           setUsername = {setUsername}
-          active={inputField == "username" ? true : false}
+          active={loginOptions[inputIndex] == "username" ? true : false}
 
           // (Enter Key) Two outcomes to submitting a username
           submitResponse={credentialValidity}
@@ -368,7 +368,7 @@ function App() { // This will be a
           username={username}
           password={password}
           setPassword={setPassword}
-          active={inputField == "password" ? true : false}
+          active={loginOptions[inputIndex] == "password" ? true : false}
           submitResponse={credentialValidity}
           func={tryLogin} 
           error={passwordError}
@@ -383,7 +383,6 @@ function App() { // This will be a
       <SimpleSwitcher // Toggling between two options
         Vertical={false}
         Horizontal={true}
-        Setter={setProgressIndex}
         list={progressMenuOptions}
         index={progressIndex}
         setIndex={setProgressIndex}
@@ -396,7 +395,7 @@ function App() { // This will be a
           setMenu={setMenu}
 
           // I'm going to use the index instead of the names
-          active={progressIndex}
+          active={progressMenuOptions[progressIndex]}
         />
       </Box>
 
@@ -420,6 +419,11 @@ function App() { // This will be a
       /> 
   );
 
+  const gradedAssignmentRender = () => 
+  {
+    return <DisplayAssignments data={courseData[course].gradedAssignments} setMenu={setMenu} />
+  }
+
 
 
   if( (menu == 'login') || !cookie)
@@ -437,6 +441,20 @@ function App() { // This will be a
     // This is the section you'll be able to submit assignments from
     return assignmentRendering();
   }
+
+
+  // Assignment Submitter,  Assignment Viewer
+
+  /*if(menu == "assignments")
+  {
+
+  }*/
+
+  if(menu == "gradedAssignments")
+  {
+    return gradedAssignmentRender();
+  }
+
   
   /*
    

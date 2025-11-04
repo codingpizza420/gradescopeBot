@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import{render, Box, Text} from "ink";
+import{render, Box, Text, useInput} from "ink";
 import AssignmentModel from "./assignmentStateModels.js";
 
 
@@ -29,7 +29,7 @@ function AssignmentModal({active, content}) // doesn't matter whether it's assig
     <Box
       borderStyle="bold"
       flexDirection="column"
-      borderDimColor={active}
+      borderDimColor={!active}
       width={30}
       height={18}
       paddingY={1}
@@ -54,7 +54,7 @@ function AssignmentsDue({assignments, active})
 
   return(
   <Box
-    borderDimColor={active}
+    borderDimColor={!active}
     flexDirection="column"
     alignItems="center"  
     gap={1}
@@ -62,7 +62,7 @@ function AssignmentsDue({assignments, active})
     width="100%"
   >
     <Text
-      dimColor={active} 
+      dimColor={!active} 
       bold={true} 
       color="white"
     >Assignments</Text>
@@ -93,7 +93,7 @@ function NumberOfGradedAssginments({gradedAssignments, active })
   const numberOfAssignments = gradedAssignments.length;
   return(
     <Box 
-      borderDimColor={active}
+      borderDimColor={!active}
       flexDirection="column"
       alignItems="center"  
       gap={1}
@@ -101,7 +101,7 @@ function NumberOfGradedAssginments({gradedAssignments, active })
       width="100%"
     >
       <Text 
-        dimColor={active} 
+        dimColor={!active} 
         bold={true} 
         color="white"
       >Graded Assignments</Text>
@@ -114,8 +114,19 @@ function NumberOfGradedAssginments({gradedAssignments, active })
   )
 }
 
-function ProgressMenu({assignments, gradedAssignments, active})
+function ProgressMenu({assignments, gradedAssignments, active, setMenu})
 {
+  useInput( (input, key) => 
+  {   // I'm not using toggler so I can't use its setmenu and location parameters. Fix this, makes the code look sloppy
+
+
+    if(key.return)  // This will return the currently active one
+      setMenu(active)
+
+    if(key.escape) // will return back to the course chooser
+      setMenu("loadCourses")
+
+  })
  return(
   <Box
       flexDirection="row"
@@ -127,13 +138,13 @@ function ProgressMenu({assignments, gradedAssignments, active})
   >
   
     <AssignmentModal
-      active={active == 0 ? false : true}
-      content={<AssignmentsDue assignments={assignments} active={active == 0 ? false : true}/>}
+      active={active == "assignments"}
+      content={<AssignmentsDue assignments={assignments} active={active == "assignments"}/>}
     />
   
     <AssignmentModal
-      active={active == 0 ? true : false}
-      content={<NumberOfGradedAssginments gradedAssignments={gradedAssignments} active={active == 0 ? true : false}/>}
+      active={active == "gradedAssignments"}
+      content={<NumberOfGradedAssginments gradedAssignments={gradedAssignments} active={active == "gradedAssignments"}/>}
     />
   
   </Box> 
