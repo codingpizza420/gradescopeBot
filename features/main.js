@@ -1,5 +1,5 @@
 import * as puppeteer from 'puppeteer';
-//import readlineFunctionality from './serverPrompts.js';
+import readlineFunctionality from './serverPrompts.js';
 import cookieStorage from "./browserStorage.js";
 //const {Path} = require("./path.js");
 import inputFillers from './inputFillers.js';
@@ -40,7 +40,7 @@ class main
 
     this.pageFillers = new inputFillers(this.page);
     this.cookieStorage = new cookieStorage(this.page);
-
+    this.prompts = new readlineFunctionality()
     return this.page;
   }
 

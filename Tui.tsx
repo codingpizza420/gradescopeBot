@@ -201,20 +201,20 @@ function App() { // This will be a
       storage : gradescope.cookieStorage,
       setCookie
     });
-
-    // after waiting for the validity of the login credentials, we must wait for the courses to load.
-    const loadedCourses = await gradescope.courseSelector();
     
-    if(success && loadedCourses)
+
+    if(!success)
     {
-      setMenu("main")  
-    }
-    else
-      {
-        // the code it requires to reset login state to focus on username input field.
+      // the code it requires to reset login state to focus on username input field.
       setInputIndex(0);
       setCredentialValidity(false);
       setMenu("login");
+    }
+
+    else
+    { // load the courseData
+      await gradescope.courseSelector();
+      setMenu("main")  
     }
   };
 
@@ -264,25 +264,6 @@ function App() { // This will be a
 
   }, [course])
 
-  /*React.useEffect( () => // Listening for user's input on changing the course
-  {
-    /*
-      This runs when course, referencing a href, is changed. 
-      This change is only made through courseToggler. To ensure any further action is taken, we must confirm that the current page is located at address `https://www.gradescope.com/courses/${href}`
-
-
-     
-
-    // First check if the gradescopes address is valid
-    /*if(gradescope.page.url == `https://www.gradescope.com/${course}`)
-    {
-    }
-
-
-    setMenu("submit");
-
-  }, [course] ) // Setting course as a dependency 
-  */
   React.useEffect( () => 
   {
     if(currentAssignmentDetails != null)
