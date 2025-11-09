@@ -87,8 +87,15 @@ async function setHref({href, course, setCourse, courseData, addCourseData, getC
   */
 
   
+  if(courseData[href])
+  { // !Rerendering Issue! useEffect will not setMenu to "submit" if href == course ( Not this course, Tui's course). This solution works  
+    setCourse(href);
+    setMenu("submit")
+    return;
+  }
+
+
   setWaiting(true) // This will ensure waiting in between retreiving the data
-  
   setMenu("loading");
   let data = await getCourseData(href);
 

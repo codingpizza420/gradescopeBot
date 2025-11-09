@@ -5,40 +5,46 @@ import {Toggler} from "../tools/selectionToggler.js";
 //function  
 
 
-function AssignmentDesign({name, grade, active, index})
+
+
+function AssignmentDesign({ name, grade, date, active, index }) 
 {
-  return(
+  return (
     <Box
-      //borderStyle="bold"
-      //borderColor="red"
-      width={50}
-      height={3}
-      justifyContent="space-between"
-      borderStyle="single"
+      borderStyle="round"
       borderColor="cyan"
-      borderDimColor={ !(active == index) }
+      borderDimColor={!(active == index)}
+      flexDirection="column"
+      width={50}
+      height={10}
     >
       <Box
-        flexDirection="row"
-        gap={1}
+        width="100%"
+        justifyContent="center"
       >
-
         <Text
           color="cyan"
+          bold={true}
           dimColor={!(active == index)}
-        >{name}</Text>
+        >{name} </Text>
       </Box>
 
-
       <Text
-        backgroundColor="#013220"
         color="white"
         bold={true}
         dimColor={!(active == index)}
-      >{grade}</Text>
+      >Grade: {grade}</Text>
+
+      <Text
+        color="white"
+        bold={true}
+        dimColor={!(active == index)}
+      >Due Date: {date}</Text>
+    
     </Box>
-  )
+  );
 }
+
 
 // Since we're trying to keep a pattern, cyan and blueBright are the colors we use for the directory Toggler
 
@@ -65,7 +71,7 @@ function AssignmentDesign({name, grade, active, index})
 function DisplayAssignments({ data, setMenu}) 
 {
   const [pointer, setPointer] = useState(0);
-  const limit = 8; 
+  const limit = 6; 
   
   const gradedDisplayer = () => 
   (
@@ -73,13 +79,14 @@ function DisplayAssignments({ data, setMenu})
       items={data}
       limit={limit}
       pointer={pointer}
-      height={35}
+      height={45}
       width={55}
       renderComponent={(item, index, key) => (
         <AssignmentDesign
           name={item.text}
           grade={item.score}
           key={key}
+          date={item.date}
           active={pointer}
           index={index + ((Math.ceil((pointer + 1) / limit) - 1) * limit)}
         />
