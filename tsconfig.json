@@ -16,6 +16,4 @@
   [
     "**/*.ts",
     "**/*.tsx",
-    "**/*.js"
-  ] // Include typescript and js files
 } 

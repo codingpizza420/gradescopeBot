@@ -1,4 +1,10 @@
 {
+  "name": "gradescope-bot",
+  "version": "2.0",
+  "bin": {
+    "gradescopeBot": "./bin.js"
+  },
+
   "type": "module",
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
