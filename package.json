@@ -4,6 +4,9 @@
   "bin": {
     "gradescopeBot": "./bin.js"
   },
+  "scripts": {
+    "postinstall": "node bin.js --setup"
+  },
 
   "type": "module",
   "dependencies": {
