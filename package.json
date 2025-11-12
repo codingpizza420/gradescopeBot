@@ -4,14 +4,11 @@
   "bin": {
     "gradescopeBot": "./bin.js"
   },
-  "scripts": {
-    "postinstall": "node bin.js --setup"
-  },
-
   "type": "module",
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
     "ink": "^5.2.0",
+    "ink-spinner": "^5.0.0",
     "ink-text-input": "^6.0.0",
     "nodemon": "^3.1.9",
     "puppeteer": "^24.4.0",
