@@ -35,27 +35,34 @@ node -v # Should print "v24.11.1".
 # Verify npm version:
 npm -v # Should print "11.6.2". 
 ```
+# Step 1, install git commands( only way to clone the project)
+
+Macos
+
+```
+  xcode-select --install
+  brew install git
+```
 
 
-# Step 1, Clone the Project
+Windows os
+
+```
+winget install --id Git.Git -e --source winget
+```
+Usually have to restart your powershell
+
+Test to make sure you have git commands with 
+
+```
+  git --version  
+```
+
+# Step 2, Clone the Project
 
 This can be done either through downloading the file's zip (Green "code" Button ) or cloning the project with git commands.
 
-`git clone -b master https://github.com/codingpizza420/gradescopeBot.git`
-
-
-# Step 2, Setting up project enviornment
-
-Once the folder is installed, enter the folders directory
-
-Mac os example of location: `/Users/Diego/gradescopeBot`
-
-Windowss os example of location `C:\Users\Diego\gradescopeBot`
-
-write the following commands:
-
-1. `npm install` ( Makes sure all project dependencies are installed)
-1. `npm link` ( Link the CLI globally )
+`git clone -b master https://github.com/codingpizza420/gradescopeBot.git && cd gradescopeBot && npm install && npm link`
 
 # Step 3, run the project
 
