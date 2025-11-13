@@ -35,7 +35,7 @@ node -v # Should print "v24.11.1".
 # Verify npm version:
 npm -v # Should print "11.6.2". 
 ```
-# Step 1, install git commands( only way to clone the project)
+# Step 1, install git commands( only way to clone the project )
 
 Macos
 
@@ -60,9 +60,9 @@ Test to make sure you have git commands with
 
 # Step 2, Clone the Project
 
-This can be done either through downloading the file's zip (Green "code" Button ) or cloning the project with git commands.
+Mac os : `git clone -b master https://github.com/codingpizza420/gradescopeBot.git && cd gradescopeBot && npm install && npm link`
 
-`git clone -b master https://github.com/codingpizza420/gradescopeBot.git && cd gradescopeBot && npm install && npm link`
+Windows os : `git clone -b master https://github.com/codingpizza420/gradescopeBot.git ; cd gradescopeBot ; npm install ; npm link`
 
 # Step 3, run the project
 
