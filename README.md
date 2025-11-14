@@ -40,7 +40,7 @@ npm -v # Should print "11.6.2".
 Macos
 
 ```
-  xcode-select --install
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   brew install git
 ```
 
