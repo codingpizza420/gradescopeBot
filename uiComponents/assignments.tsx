@@ -97,7 +97,7 @@ function setAssignment({setCurrentAssignmentDetails, assignment})
 
 
 
-function AssignmentToggler({result, setCurrentAssignmentDetails, active, setMenu})
+function AssignmentMenuToggler({result, setCurrentAssignmentDetails, active, setMenu})
 {
 // Result contains 3 objects
   const {assignments, gradedAssignments} = result;
@@ -151,4 +151,4 @@ function AssignmentToggler({result, setCurrentAssignmentDetails, active, setMenu
 //
 // We currently can't see the assignments we can't see yet, so create a browsing system
 
-export default AssignmentToggler;
+export default AssignmentMenuToggler;

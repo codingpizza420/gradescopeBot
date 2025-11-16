@@ -5,7 +5,7 @@ import {render, Box, Text} from "ink";
 import UsernameComponent from "./uiComponents/username.js";
 import PasswordHandler from "./uiComponents/password.js";
 import CourseToggler from "./uiComponents/courses.js";
-import AssignmentToggler from "./uiComponents/assignments.js";
+import AssignmentMenuToggler from "./uiComponents/assignments.js";
 import main from "./features/main.js"; // Most important script, every class reference comes through it. This makes reference easier when it call comes from one source.
 import path from "./features/path.js";
 
@@ -23,6 +23,9 @@ import LoadingScreen from "./uiComponents/loading.js";
 import {SimpleSwitcher} from "./tools/selectionToggler.js";
 
 import DisplayAssignments from "./uiComponents/gradedAssignmentViewer.js"
+
+// Footer
+import InputControlsFooter from "./uiComponents/footer.js";
 
 const gradescope = new main();
 const PATH = new path();
@@ -290,19 +293,28 @@ function App() { // This will be a
   
   if(menu == "main")
   {
-    return(<DisplayMenu 
-      setMenu={setMenu}
-      currentPath=
-      { // since it is an async function, we must call it as such to get its value
-        currentPath
-      }
-    />)
+    return(
+      <>
+      <DisplayMenu 
+          setMenu={setMenu}
+          currentPath=
+          { 
+            // since it is an async function, we must call it as such to get its value
+            currentPath
+          }
+        />
+      
+        <InputControlsFooter arrowOrientation="Horizontal"/>
+      </>
+    )
   }
 
 
 
   if(menu == "fileChooser")
   {
+    /*The input commands for file chooser will be dificult to  describe, however, it will totally be different from the rest*/
+
     return(<PathChooser setMenu={setMenu} displayedDirectory={displayedDirectory} changeDisplayedDirectory={changeDisplayedDirectory} previousDisplayed={previousDisplayed}/>)
   }
   
@@ -310,7 +322,7 @@ function App() { // This will be a
   
     const loginRendering = () => // It's much easier with conditionals, ternary can get confusing as this project gets bigger.
   (
-
+      <>
       <Box
           flexDirection={"column"}
           justifyContent="center"
@@ -354,12 +366,17 @@ function App() { // This will be a
           func={tryLogin} 
           error={passwordError}
           setError={setPasswordError}
-          /> 
-        </Box> 
+        /> 
+          
+        </Box>
+
+        <InputControlsFooter arrowOrientation={"Vertical"}/>
+        </>
     )
   
-  const assignmentRendering = () => 
+  const AssignmentMenu = () => 
   (
+    <>
     <Box>
       <SimpleSwitcher // Toggling between two options
         Vertical={false}
@@ -370,7 +387,7 @@ function App() { // This will be a
       />
   
 
-        <AssignmentToggler
+        <AssignmentMenuToggler
           result={courseData[course]}
           setCurrentAssignmentDetails={setCurrentAssignmentDetails}
           setMenu={setMenu}
@@ -378,13 +395,16 @@ function App() { // This will be a
           // I'm going to use the index instead of the names
           active={progressMenuOptions[progressIndex]}
         />
-      </Box>
 
+      </Box>
+      <InputControlsFooter arrowOrientation="Horizontal"/>
+      </>
   );
 
 
   const courseRendering = () => 
   (
+    <>
     <CourseToggler
       courses={gradescope.courses}
       setCourse={setCourse}
@@ -396,13 +416,23 @@ function App() { // This will be a
       // Also remember we're using main.js to keep control of the puppeteer page
       getCourseData = { (href) => gradescope.enterCourse(href) }
       setWaiting={setWaiting}
+      />
       
-      /> 
+      <InputControlsFooter arrowOrientation="Horizontal"/>
+      </>
   );
 
   const gradedAssignmentRender = () => 
+  (
+    <>
+      <DisplayAssignments data={courseData[course].gradedAssignments} setMenu={setMenu} />
+      <InputControlsFooter arrowOrientation="Vertical"/>
+    </>
+  )
+
+  const pending = () => 
   {
-    return <DisplayAssignments data={courseData[course].gradedAssignments} setMenu={setMenu} />
+   return (<Box><Text>This assignment section is pending, design is pending...</Text></Box>)
   }
 
 
@@ -420,16 +450,16 @@ function App() { // This will be a
   if(menu == "submit")
   {
     // This is the section you'll be able to submit assignments from
-    return assignmentRendering();
+    return AssignmentMenu();
   }
 
 
   // Assignment Submitter,  Assignment Viewer
 
-  /*if(menu == "assignments")
+  if(menu == "assignments")
   {
-
-  }*/
+    return pending();
+  }
 
   if(menu == "gradedAssignments")
   {

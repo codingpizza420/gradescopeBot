@@ -126,7 +126,9 @@ function ProgressMenu({assignments, gradedAssignments, active, setMenu})
     if(key.escape) // will return back to the course chooser
       setMenu("loadCourses")
 
-  })
+  });
+
+
  return(
   <Box
       flexDirection="row"
