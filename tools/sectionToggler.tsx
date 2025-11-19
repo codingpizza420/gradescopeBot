@@ -110,7 +110,7 @@ function Section({items, limit, pointer, renderComponent, height, width})
       
       <Text>{currentSubset}/{numberOfSubsets}</Text>
     
-
+ 
       </Box>
   </Box>
 

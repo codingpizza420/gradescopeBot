@@ -5,7 +5,7 @@ import {render, Box, Text} from "ink";
 import UsernameComponent from "./uiComponents/username.js";
 import PasswordHandler from "./uiComponents/password.js";
 import CourseToggler from "./uiComponents/courses.js";
-import AssignmentMenuToggler from "./uiComponents/assignments.js";
+import {AssignmentMenuToggler, DisplaySubmittableAssignments} from "./uiComponents/assignments.js";
 import main from "./features/main.js"; // Most important script, every class reference comes through it. This makes reference easier when it call comes from one source.
 import path from "./features/path.js";
 
@@ -430,10 +430,14 @@ function App() { // This will be a
     </>
   )
 
-  const pending = () => 
-  {
-   return (<Box><Text>This assignment section is pending, design is pending...</Text></Box>)
-  }
+  const assignmentRendering = () => 
+  (
+    <>
+      <DisplaySubmittableAssignments
+        data={courseData[course].assignments}
+        setMenu={setMenu}/>
+    </>
+  )
 
 
 
@@ -458,7 +462,7 @@ function App() { // This will be a
 
   if(menu == "assignments")
   {
-    return pending();
+    return assignmentRendering();
   }
 
   if(menu == "gradedAssignments")

@@ -57,75 +57,79 @@ class inputFillers
 
     async assignmentsDueDetails() // Assuming we're currently at https://gradescope.com/${courses[index].href}
     {
-      // Wait for the rows to load (assuming multiple <th> elements with the class table--primaryLink)
-      // Extract details for each row
-      let newAssignments = [];
-      let accessableAssignments = []; 
-
-        const assignments = await this.page.evaluate( () => {
+      const assignments = await this.page.evaluate( () => 
+      {
         try
         {
-        // New Assignments
-        newAssignments = Array.from(document.querySelectorAll("tbody tr"))
-        .filter(th => th.querySelector('button'))
-        .map(th =>
-        ({
+          // assignments
+          const newAssignments = Array.from(document.querySelectorAll("tbody tr"))
+          .filter(th => th.querySelector('button'))
+          .map(th =>
+          ({
           text : th.querySelector("button").textContent,
-          postUrl : th.querySelector("button") ? th.querySelector("button").getAttribute('data-post-url') : "find something else to do it!",
+          postUrl : th.querySelector("button") ? 
+            th.querySelector("button").getAttribute('data-post-url') : 
+            "find something else to do it!",
           date : th.querySelector(".submissionTimeChart--dueDate").textContent
         }))
 
-
-        // Graded Assignments
-        accessableAssignments = Array.from(document.querySelectorAll("tbody tr"))
+        // graded assignments
+        const accessableAssignments = Array.from(document.querySelectorAll("tbody tr"))
         .filter(th => th.querySelector('a'))
         .map(th =>
         ({
           text : th.querySelector(".table--primaryLink").textContent,
-          score : th.querySelector(".submissionStatus--score") ? th.querySelector(".submissionStatus--score").textContent : th.querySelector("a").href,
-
+          score : th.querySelector(".submissionStatus--score") ? 
+            th.querySelector(".submissionStatus--score").textContent : 
+            th.querySelector("a").href,
           // determines if the scrapper needs to search for the grade
           scoreChecker : th.querySelector(".submissionStatus--score") ? false : true,
-
           // Contains time chart? then we can resubmit it, else just display that score if it hasn't already.
           resubmission : th.querySelector(".submissionTimeChart--timeRemaining") ? true : false,
+          ResubmissionLink : th.querySelector(".submissionTimeChart--timeRemaining") ?
+            th.querySelector("a").getAttribute("href") : 
+            null,
 
-          ResubmissionLink : th.querySelector(".submissionTimeChart--timeRemaining") ? th.querySelector("a").getAttribute("href") : null,
-
-          date : th.querySelector(".submissionTimeChart--dueDate") ? th.querySelector(".submissionTimeChart--dueDate").textContent : "Not Provided",
-
+          date : th.querySelector(".submissionTimeChart--dueDate") ? 
+            th.querySelector(".submissionTimeChart--dueDate").textContent : 
+            "Not Provided",
         }));
-        }
-        catch(error)
-        {
-        console.error(error, "this is the error")
-        }
-
-
-
-        /*
-            Submitted assignments with no complete grade will have a link.
-            The link will be used to grab the score from the phyiscal site.
-
-         */
-
-        // Assignments unable to submit
-        /*const unaccessableAssignments = Array.from(document.querySelectorAll("tbody tr"))
-        .filter(th => !th.querySelector('a') && !th.querySelector("button"))
-        .map(th =>
-        ({
-            text : th.querySelector(".table--primaryLink").textContent,
-            date : th.querySelector(".submissionTimeChart--dueDate") ? th.querySelector(".submissionTimeChart--dueDate").textContent : "Not Provided",
-        }));*/
-
         return {
           assignments : newAssignments,
           gradedAssignments : accessableAssignments,
-          //unfinishedAssignments : unaccessableAssignments
+        }
+        }
+        catch(error)
+        {
+          console.error(error);
+
+          // default
+          return { assignments: [], gradedAssignments: [] };
         }
       });
+    
+      // We're given two objs, one storing an array of assignments, and the other storing graded/resubmittable asssignments 
+    
+      // Running some swapping filtering 
+      const resubmittable = assignments.gradedAssignments.filter(a => a.resubmission);
+      assignments.assignments.push(...resubmittable); // Have to flatten it out 
+      assignments.gradedAssignments = assignments.gradedAssignments.filter(a => !a.resubmission);
 
-      //  returns gradescope assignments in an object format.
+      
+      // URL -> SCORE
+      // important for resubmittable assignments
+      for (const list of [assignments.assignments, assignments.gradedAssignments]) 
+      {
+        for (const a of list) 
+        {
+          if (a.scoreChecker && a.score) 
+          {
+            a.score = await this.urlToScore(a.score);
+            a.scoreChecker = false;
+          }
+        }
+      }
+
       return assignments
     }
   
