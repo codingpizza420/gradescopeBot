@@ -8,102 +8,164 @@ import { ProgressBar } from "@inkjs/ui";
 import { Section } from "../tools/sectionToggler.js";
 import {Toggler} from "../tools/selectionToggler.js";
 
-function DisplaySubmittableDesign({item, active, index})
+
+function selectedItem(selected)
+{
+  return (
+	  <Text bold>[{selected ? <Text color="green" bold>X</Text> : " "}]</Text>
+	);
+}
+
+
+
+
+function DisplaySubmittableDesign({item, active, index, selectedAssignments})
 {
   const {text, date, score} = item;
   const hasGrade = score ? score : "N/A";
+  const isActive = index == active;
+  //const selected = selectedAssignments[pointer]
+  /*
+  
+  We're going to be creating our own selected. Therefore, this means when an item is selected it'd be displayed like this [x](green and bolded)
+  If not selected, it will be displayed like this [ ]
+  
+  */
+ return (
+		<Box
+			borderStyle="round"
+			borderColor="cyan"
+			borderDimColor={!isActive}
+			width={50}
+			height={5}
+			flexDirection="row"
+			alignItems="center"
+			justifyContent="center"
+		>
+			<Box
+				width={5}
+				alignItems="center"
+				justifyContent="flex-start"
+			>
+				{selectedItem(selectedAssignments.includes(index))}
+			</Box>
 
-  return (
-    <Box
-      borderStyle="round"
-      borderColor="cyan"
-      borderDimColor={!(active == index)}
-      flexDirection="column"
-      width={50}
-      height={10}
-    >
-      <Box width="100%" justifyContent="center">
-        <Text
-          color="cyan"
-          bold
-          dimColor={!(active == index)}
-        >{text}</Text>
-      </Box>
+			<Box
+				flexDirection="column"
+				alignItems="center"
+				justifyContent="center"
+			>
+				<Text color="cyan" bold dimColor={!isActive}>
+					{text}
+				</Text>
 
-      <Text
-        color="white"
-        bold
-        dimColor={!(active == index)}
-      >Grade: {hasGrade}</Text>
+				<Text color="white" bold dimColor={!isActive}>
+					Grade: {hasGrade}
+				</Text>
 
-      <Text
-        color="white"
-        bold
-        dimColor={!(active == index)}
-      >Due Date: {date}</Text>
-
-    </Box>
-  );
-
-
-
+				<Text color="white" bold dimColor={!isActive}>
+					Due Date: {date}
+				</Text>
+			</Box>
+		</Box>
+	);
   }
-
 
 function DisplaySubmittableAssignments({data, setMenu})
 {
   const [pointer, setPointer] = useState(0);
   const limit = 6;
+  const [selectedAssignments, setSelectedAssignments] = useState([]); // an array storing indicies of assingmnets chosen.
+  const [refresh, setRefresh] = useState(false);
+  
+  function selectAssignment() 
+  {
+	  const exists = selectedAssignments.includes(pointer);
+	  let newSA;
 
-  const assignmentDisplayer = () => 
-  (
-    <Section
-      items={data}
-      limit={limit}
-      pointer={pointer}
-      height={45}
-      width={55}
-      renderComponent={ (item, index, key) => 
-      (
-        <DisplaySubmittableDesign
-          key={key}
-          item={item}
-          active={pointer}
-          index={index + ((Math.ceil((pointer + 1) / limit) - 1) * limit)}
-        />
-      )}
-    />
-  )
+	  if (exists)
+    {
+		  // remove → compress the queue
+		  newSA = selectedAssignments.filter(i => i !== pointer);
+	  } 
 
+    else
+    {
+		  // push to the end
+		  newSA = [...selectedAssignments, pointer];
+	  }
 
- return (
-    <Box flexDirection="column" justifyContent="center" alignItems="center">
+	  setSelectedAssignments(newSA);
+	  setRefresh(r => !r);
+}
+
+ 	const assignmentDisplayer = () => (
+    <Box 
+      // Forcing the refresh, so selected status are show instantly!
+      key={refresh ? 'r1' : 'r0'}>
+		<Section
+			items={data}
+			limit={limit}
+			pointer={pointer}
+			height={45}
+			width={55}
+			renderComponent={(item, index, key) => (
+				<DisplaySubmittableDesign
+					key={key}
+					item={item}
+					active={pointer}
+					index={index + ((Math.ceil((pointer + 1) / limit) - 1) * limit)}
+          selectedAssignments={selectedAssignments}
+				/>
+			)}
+		/>
+    </Box>
+	);
+
+	return (
+		<Box
+			flexDirection="row"
+			alignItems="center"
+			justifyContent="center"
+			width="100%"
+			height="100%"
+		>
+			<Toggler
+				pointerLimit={data.length - 1}
+				activeElement={pointer}
+				setActiveElement={setPointer}
+				enterFunction={selectAssignment}
+				DisplayElements={assignmentDisplayer}
+				verticalArrows={true}
+				horizontalArrows={false}
+				setMenu={setMenu}
+				location="submit"
+			/>
+
       <Box
+        height={45}
+        width={55}
+        borderStyle="single"
+        borderColor="gray"
         flexDirection="column"
-        justifyContent="center"
         alignItems="center"
       >
-        <Toggler
-          pointerLimit={data.length - 1}
-          activeElement={pointer}
-          setActiveElement={setPointer}
-          enterFunction={() => console.log(data[pointer])}
-          DisplayElements={assignmentDisplayer}
-          verticalArrows={true}
-          horizontalArrows={false}
-          setMenu={setMenu}
-          location={"submit"}
-        />
+      {
+        selectedAssignments.map((index, i) => 
+        {
+		      const item = data[index];
+		      return (
+			      <Box key={i}>
+				      <Text color="gray">{item.text}</Text>
+			      </Box>
+		      );
+	      })
+      }
       </Box>
-    </Box>
-  );
+		</Box>
+	);
 
 
-
-  /*return(
-    <>{assignmentDisplayer()}</>
-  
-  )*/
 }
 
 

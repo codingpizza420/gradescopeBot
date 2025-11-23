@@ -136,12 +136,13 @@ class main
 
 
 
+  // 2 different submission functions
+
   async submitAssignment(uploaderTag)
   {
     await this.page.locator(`button[data-post-url="${uploaderTag}"`).click();
     this.finish();
   }
-
 
   async resubmitAssignment(uploaderTag)
   {
@@ -151,14 +152,18 @@ class main
     this.finish();
   }
  
+  /*
+   
+    REMEMBER TO KEEP PAGE URL IN MIND
+  
+  */
 
-  // 
   
    
-  async finish()
+  /*async finish()
   {
     // Locating files on the local machine
-    const fileObjects = await readline.requestingFileLocation();
+    //const fileObjects = await readline.requestingFileLocation();
 
     // filepath alongisde function which decides the exact file.
     const file = `${readline.defaultPath}${fileObjects[await readline.toggler(fileObjects,"",25)].text}`;
@@ -171,28 +176,33 @@ class main
     const siteData = await this.uploadedAssignmentData(fileInput);
 
     // Confirmation form user. Yes Or No with 0 being yes and 1 being no, Binary reversed.
-   const response = await readline.toggler([{text : "Yes"}, {text : "No"}], await readline.sitePrompt(siteData), 5);
+   //const response = await readline.toggler([{text : "Yes"}, {text : "No"}], await readline.sitePrompt(siteData), 5);
 
-    if(response == 0)
-    {
-      const {name, score, testCase} = await this.submittingAssignment();
-      console.log(
-      `
+    //if(response == 0)
+    //{
+    
+    const {name, score, testCase} = await this.submittingAssignment();
+    //  console.log(
+     // `
 
-                                  Final Result
+       //                           Final Result
 
-        Name : ${name}
+        //Name : ${name}
 
-        Score : ${score}
+        //Score : ${score}
 
-        Result : ${testCase}
-      `
-      )
+        //Result : ${testCase}
+      //`
+      //)
+
     }
-    else
-    {
-      console.log(" Figure out something from here. ")
-    }
+
+  }*/
+
+
+  async submit()
+  {
+
   }
 
 
