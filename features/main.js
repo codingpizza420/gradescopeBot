@@ -23,6 +23,11 @@ class main
     // If there is a problem with a submission we can refresh. Built in refresh button key as well. 
     this.courses = {} 
     this.courseDetails = {}
+
+    // Handling submissions, limits
+    this.submissionLoad = [];
+    this.limit = 8; // This varies, on what comoonenet? 
+
   }
   
 
@@ -43,7 +48,12 @@ class main
     this.prompts = new readlineFunctionality()
     return this.page;
   }
+  
+  async handleLoad()
+  {
+      return;
 
+  } 
   
   
   async login()
@@ -140,8 +150,9 @@ class main
 
   async submitAssignment(uploaderTag)
   {
+    // Must be loaded in 
     await this.page.locator(`button[data-post-url="${uploaderTag}"`).click();
-    this.finish();
+    //this.finish();
   }
 
   async resubmitAssignment(uploaderTag)
@@ -149,7 +160,11 @@ class main
     await this.page.locator(`[href="${uploaderTag}"]`).click();
     await this.page.waitForNavigation()
     await this.page.locator(".js-submitAssignment").click();
-    this.finish();
+
+
+
+
+    //this.finish();
   }
  
   /*

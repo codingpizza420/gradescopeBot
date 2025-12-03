@@ -80,8 +80,8 @@ function Section({items, limit, pointer, renderComponent, height, width})
     <Box
       flexDirection="column"
 
-      borderStyle="single"
-      borderColor="blue"
+      borderStyle="round"
+      borderColor="grey"
       height={height}
       width={width}
       justifyContent="space-between"

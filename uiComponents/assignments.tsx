@@ -1,8 +1,7 @@
 import React, {useState} from "react";
-import{render, Box, Text} from "ink";
+import{render, Box, Text, useInput} from "ink";
 import AssignmentModel from "./assignmentStateModels.js";
 import ProgressMenu from "../uiComponents/progress-main.js";
-import { ProgressBar } from "@inkjs/ui";
 
 
 import { Section } from "../tools/sectionToggler.js";
@@ -71,13 +70,37 @@ function DisplaySubmittableDesign({item, active, index, selectedAssignments})
 	);
   }
 
-function DisplaySubmittableAssignments({data, setMenu})
+function DisplaySubmittableAssignments({data, setMenu, setAssignmentArray})
 {
   const [pointer, setPointer] = useState(0);
   const limit = 6;
   const [selectedAssignments, setSelectedAssignments] = useState([]); // an array storing indicies of assingmnets chosen.
   const [refresh, setRefresh] = useState(false);
   
+
+  useInput((input, key) => 
+  {
+    if(input === "s")
+    {
+      if(selectedAssignments.length < 1 )
+      {
+        return; // This means that nothing was selected, perhaps an error message in the future!
+      }
+
+      let sAA = [];
+  
+      for(let i = 0; i < selectedAssignments.length; i ++ )
+      {
+        sAA.push(Object.values(data)[selectedAssignments[i]] ) ;
+      }
+      
+      setAssignmentArray(sAA);
+      setMenu("homeworkMatching");
+    }
+  }) 
+
+
+
   function selectAssignment() 
   {
 	  const exists = selectedAssignments.includes(pointer);
@@ -97,7 +120,9 @@ function DisplaySubmittableAssignments({data, setMenu})
 
 	  setSelectedAssignments(newSA);
 	  setRefresh(r => !r);
-}
+  } 
+
+
 
  	const assignmentDisplayer = () => (
     <Box 
@@ -232,4 +257,4 @@ function AssignmentMenuToggler({result, setCurrentAssignmentDetails, active, set
 
 */
 
-export {AssignmentMenuToggler, DisplaySubmittableAssignments};
+export {AssignmentMenuToggler, DisplaySubmittableAssignments, selectedItem};

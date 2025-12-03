@@ -27,6 +27,9 @@ import DisplayAssignments from "./uiComponents/gradedAssignmentViewer.js"
 // Footer
 import InputControlsFooter from "./uiComponents/footer.js";
 
+// Assigmnent Submission State 
+import {AssignmentStatus} from "./uiComponents/fileSubmission.js";
+
 const gradescope = new main();
 const PATH = new path();
 // this.pageFillers
@@ -62,7 +65,12 @@ With calling this function I can use the following attributes
   {
     setLogin("loadCourses");
     setMenu("main");
+    //setMenu("homeworkMatching")
     setCookie(true);
+
+
+    
+
   }
 
 }
@@ -129,12 +137,12 @@ function App() { // This will be a
   
   // [error, setError] are no longer valid, parent componenets need more interference for more functionality
 
-  const [usernameError, setUsernameError] = useState<string | boolean>(false);
-  const [passwordError, setPasswordError] = useState(false);
+  let [usernameError, setUsernameError] = useState<string | boolean>(false);
+  let [passwordError, setPasswordError] = useState(false);
 
   
-
-  
+  // array of assignments that are currently in the submission state
+  let [assignmentArray, setAssignmentArray] = useState([]);
 
 
   // This is for login state 
@@ -162,7 +170,7 @@ function App() { // This will be a
 
 
   // These are the three states this program can be in, main to select one of the two. submit is for submitting assignments. fileChooser is for changing the path or creating a path for file submission locations.
-	const [menu, setMenu] = useState<'main' | 'submit' | "loadCourses" |'fileChooser' | 'loading' | "login" | "assignments" | "gradedAssignments"> ('loading');
+	const [menu, setMenu] = useState<'main' | 'submit' | "loadCourses" |'fileChooser' | 'loading' | "login" | "assignments" | "gradedAssignments" | "homeworkMatching"> ('loading');
   
   // Having these states will be very benefical later on. Having different states will be easier to handle since I can now distguish current and previous proccesses. Therefore, I can create a system toggling between different states and processes.
 
@@ -284,7 +292,6 @@ function App() { // This will be a
     }
   }, [waiting])
   
-
 
   if ( login === "loading" || menu == "loading" )
   {
@@ -435,8 +442,25 @@ function App() { // This will be a
     <>
       <DisplaySubmittableAssignments
         data={courseData[course].assignments}
-        setMenu={setMenu}/>
+        setMenu={setMenu}
+        setAssignmentArray={setAssignmentArray}
+      />
     </>
+  )
+
+  const submissionRendering = () => 
+  (
+
+    <>
+      <AssignmentStatus
+        data={assignmentArray}
+        readDir={PATH.viewCurrentDirectory}
+        currentDirectory={currentPath}
+        setMenu={setMenu}
+      />
+    </>
+
+
   )
 
 
@@ -469,9 +493,13 @@ function App() { // This will be a
   {
     return gradedAssignmentRender();
   }
-
   
-  /*
+  if(menu == "homeworkMatching")
+  {
+    return submissionRendering();
+  }
+  
+  /* 
    
     Gotta figure out a comparison for the course rendering part
 

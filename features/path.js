@@ -97,12 +97,46 @@ class Path
     return { stats : dir, totalSize : this.formatSize(totalSize) };
   }
   
+
+
   async listDirectory() // ensuring items
   {
     const files = await this.readDirectory(this.currentDirectory);
     return files;
   }
   
+
+  async viewCurrentDirectory(fullPath)
+  {
+    
+    const Size = (bytes) => 
+    {
+      const units = ['B', 'KB', 'MB', 'GB'];
+  
+      let i = 0;
+      while (bytes >= 1024 && i < units.length - 1) 
+      {
+        bytes /= 1024;
+        i++;
+      }
+      return `${bytes.toFixed(1)} ${units[i]}`;
+    }
+
+    // looking for files
+    const dir = await readdir(fullPath, { withFileTypes: true });
+
+    const filesWithSize = await Promise.all(
+      dir.map(async (file) =>
+      {
+        const filePath = path.join(fullPath, file.name); // FIXED
+        const size = (await stat(filePath)).size;
+
+        return { name: file.name, size: Size(size) };
+      })
+    );
+
+    return filesWithSize;
+  }
 
 
 
