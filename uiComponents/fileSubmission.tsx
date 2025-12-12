@@ -4,6 +4,7 @@ import {Section} from "../tools/sectionToggler.js";
 import {Toggler} from "../tools/selectionToggler.js";
 // The checkbox
 import {selectedItem} from "./assignments.js";
+
 /*
 
   How this will work, 
@@ -118,11 +119,24 @@ function submit(data, files)
 }
 
 
-function AssignmentStatus({data, readDir, currentDirectory, setMenu})
+function AssignmentStatus({data, readDir, currentDirectory, setMenu, submitAssignments, path})
 {
   const [files, setFiles] = useState([]); 
   const [filesReady, setReady] = useState(false);
   const [filePointer, setFilePointer] = useState(0);
+
+
+  const [submitResults, setSubmitResults] = useState(null);
+  async function handleSubmit() 
+  {
+    const results = await submitAssignments(data, filesChosen, path);
+    setSubmitResults(results);
+  }
+
+
+
+
+
   const limit = 10;
   
   // have to reset after every enter
@@ -151,7 +165,7 @@ function AssignmentStatus({data, readDir, currentDirectory, setMenu})
 
     if(input === "s")
     {
-      submit(data, filesChosen)
+      handleSubmit();
     }
   });
     
@@ -218,8 +232,6 @@ function AssignmentStatus({data, readDir, currentDirectory, setMenu})
         horizontalArrows={false}
         setMenu={setMenu}
         location={"assignments"}
-
-
        /> 
 
       </>

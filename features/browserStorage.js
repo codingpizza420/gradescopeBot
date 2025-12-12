@@ -31,6 +31,22 @@ class cookieStorage
     }
   }
   
+  async loadCookie(browserContext)
+  {
+    const cookieString = await fs.readFile("./cookies.json");
+    if(cookieString)
+    {
+      const cookie = JSON.parse(cookieString);
+      await browserContext.setCookie(...cookie);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+
+  }
+
   async validateCookie()
   {
     // This function will become really important later on.

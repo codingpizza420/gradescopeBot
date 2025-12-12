@@ -57,6 +57,10 @@ class inputFillers
 
     async assignmentsDueDetails() // Assuming we're currently at https://gradescope.com/${courses[index].href}
     {
+      // This is a bit sloppy, can defintley figure out a better way!!!!
+      // this is the original course url, before the score grabber takes over
+      const currentCourseURL = this.page.url();  
+
       const assignments = await this.page.evaluate( () => 
       {
         try
@@ -129,7 +133,13 @@ class inputFillers
           }
         }
       }
-
+      
+      // before returning assignments return back to course page, again, can figure out a better and more optimal solution. solution is simple, don't use main page to do this job, that's what the browser contexts are for.
+    //
+      await this.page.goto(currentCourseURL, 
+      {
+        waitUntil: "domcontentloaded"
+      });
       return assignments
     }
   

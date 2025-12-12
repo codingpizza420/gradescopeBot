@@ -457,6 +457,9 @@ function App() { // This will be a
         readDir={PATH.viewCurrentDirectory}
         currentDirectory={currentPath}
         setMenu={setMenu}
+        submitAssignments={gradescope.handleLoad}
+        /*redundant*/
+        path={currentPath}
       />
     </>
 
